@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend-Only Speed Test</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Frontend-Only Speed Test</h1>
+            <p>Test your internet speed completely in your browser - no backend required!</p>
+        </header>
+
+        <main>
+            <!-- Speedometer Section -->
+            <div class="speedometer-section">
+                <div class="speedometer-container">
+                    <canvas id="speedometer" width="350" height="350"></canvas>
+                    <div class="speed-display">
+                        <div class="current-speed">
+                            <span id="current-speed-value">0.0</span>
+                            <span class="unit">Mbps</span>
+                        </div>
+                        <div class="test-phase" id="test-phase">Ready to test</div>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text">Press Start to begin</div>
+                </div>
+            </div>
+
+            <!-- Control Buttons -->
+            <div class="controls">
+                <button id="start-test-btn" class="btn btn-primary">
+                    <span class="btn-icon">▶️</span>
+                    Start Test
+                </button>
+                <button id="stop-test-btn" class="btn btn-secondary" disabled>
+                    <span class="btn-icon">⏹️</span>
+                    Stop Test
+                </button>
+            </div>
+
+            <!-- Test Results -->
+            <div class="results-grid">
+                <div class="result-card download-card">
+                    <div class="result-icon">⬇️</div>
+                    <div class="result-label">Download</div>
+                    <div class="result-value">
+                        <span id="download-speed">0.0</span>
+                        <span class="result-unit">Mbps</span>
+                    </div>
+                </div>
+                
+                <div class="result-card upload-card">
+                    <div class="result-icon">⬆️</div>
+                    <div class="result-label">Upload</div>
+                    <div class="result-value">
+                        <span id="upload-speed">0.0</span>
+                        <span class="result-unit">Mbps</span>
+                    </div>
+                </div>
+                
+                <div class="result-card ping-card">
+                    <div class="result-icon">🟠</div>
+                    <div class="result-label">Ping</div>
+                    <div class="result-value">
+                        <span id="ping-value">0.0</span>
+                        <span class="result-unit">ms</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Server Information -->
+            <div class="server-info" id="server-info">
+                <div class="server-card">
+                    <div class="server-icon">🌍</div>
+                    <div class="server-details">
+                        <div class="server-name" id="server-name">No server selected</div>
+                        <div class="server-location" id="server-location">Unknown location</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test Log -->
+            <div class="test-log">
+                <h3>Test Log</h3>
+                <div class="log-container" id="test-log">
+                    <div class="log-entry">Waiting for test to start...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html> 

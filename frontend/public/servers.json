@@ -1,0 +1,92 @@
+[
+  {
+    "name": "🇩🇪 Frankfurt (Hetzner)",
+    "url": "https://speedtest.ftp.otenet.gr/files",
+    "lat": 50.1109,
+    "lon": 8.6821
+  },
+  {
+    "name": "🇺🇸 New York (DigitalOcean)",
+    "url": "https://speedtest.nyc1.digitalocean.com",
+    "lat": 40.7128,
+    "lon": -74.0060
+  },
+  {
+    "name": "🇬🇧 London (Online.net)",
+    "url": "https://speedtest.london.linode.com",
+    "lat": 51.5074,
+    "lon": -0.1278
+  },
+  {
+    "name": "🇸🇬 Singapore (Linode)",
+    "url": "https://speedtest.singapore.linode.com",
+    "lat": 1.3521,
+    "lon": 103.8198
+  },
+  {
+    "name": "🇯🇵 Tokyo (Linode)",
+    "url": "https://speedtest.tokyo.linode.com",
+    "lat": 35.6895,
+    "lon": 139.6917
+  },
+  {
+    "name": "🇧🇷 São Paulo (OVH)",
+    "url": "https://speedtest.sao01.softlayer.com",
+    "lat": -23.5505,
+    "lon": -46.6333
+  },
+  {
+    "name": "🇨🇦 Toronto (OVH)",
+    "url": "https://speedtest.tor1.digitalocean.com",
+    "lat": 43.6510,
+    "lon": -79.3470
+  },
+  {
+    "name": "🇮🇳 Bangalore (Linode)",
+    "url": "https://speedtest.bangalore.linode.com",
+    "lat": 12.9716,
+    "lon": 77.5946
+  },
+  {
+    "name": "🇺🇦 Kyiv (Volia)",
+    "url": "https://mirror.volia.net/speedtest",
+    "lat": 50.4501,
+    "lon": 30.5234
+  },
+  {
+    "name": "🇵🇱 Warsaw (Orange)",
+    "url": "https://speedtest.orange.pl",
+    "lat": 52.2297,
+    "lon": 21.0122
+  },
+  {
+    "name": "🇫🇷 Paris (Online.net)",
+    "url": "https://ping.online.net",
+    "lat": 48.8566,
+    "lon": 2.3522
+  },
+  {
+    "name": "🇳🇱 Amsterdam (LeaseWeb)",
+    "url": "https://mirror.nl.leaseweb.net",
+    "lat": 52.3676,
+    "lon": 4.9041
+  },
+  {
+    "name": "🇪🇸 Madrid (Telefonica)",
+    "url": "https://speedtest.movistar.es",
+    "lat": 40.4168,
+    "lon": -3.7038
+  },
+  {
+    "name": "🇮🇹 Milan (Eolo)",
+    "url": "https://speedtest.eolo.it",
+    "lat": 45.4642,
+    "lon": 9.1900
+  },
+  {
+    "name": "🇦🇺 Sydney (Telstra)",
+    "url": "https://speedtest.telstra.com",
+    "lat": -33.8688,
+    "lon": 151.2093
+  }
+] 

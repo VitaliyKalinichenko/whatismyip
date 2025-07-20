@@ -1,0 +1,335 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "copy": "Copiar",
+    "copied": "¡Copiado!",
+    "refresh": "Actualizar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "close": "Cerrar",
+    "open": "Abrir",
+    "yes": "Sí",
+    "no": "No",
+    "unknown": "Desconocido",
+    "notAvailable": "No Disponible"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "tools": "Herramientas",
+    "blog": "Blog",
+    "contact": "Contacto",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Servicio",
+    "admin": "Administrador",
+    "login": "Iniciar Sesión",
+    "logout": "Cerrar Sesión",
+    "dashboard": "Panel",
+    "language": "Idioma",
+    "ipLocation": "Ubicación IP",
+    "portChecker": "Verificador de Puertos",
+    "dnsLookup": "Búsqueda DNS",
+    "speedTest": "Prueba de Velocidad"
+  },
+  "home": {
+    "title": "WhatIsMyIP - Verifica Tu Dirección IP Pública",
+    "description": "Descubre tu dirección IP pública, ubicación, información del ISP y más. Herramientas profesionales de red para desarrolladores y profesionales de TI.",
+    "hero": {
+      "title": "Tu Información IP",
+      "subtitle": "Información en tiempo real sobre tu conexión a internet",
+      "publicIp": "Tu Dirección IP Pública",
+      "location": "Ubicación",
+      "isp": "ISP",
+      "timezone": "Zona Horaria",
+      "browser": "Navegador",
+      "callingCode": "Código de Llamada",
+      "currency": "Moneda"
+    },
+    "tools": {
+      "title": "Herramientas de Red",
+      "subtitle": "Herramientas profesionales para análisis de red, pruebas de seguridad y solución de problemas",
+      "speedTest": {
+        "title": "Prueba de Velocidad",
+        "description": "Prueba la velocidad y rendimiento de tu conexión a internet"
+      },
+      "pingTest": {
+        "title": "Prueba de Ping",
+        "description": "Verifica la latencia y conectividad con servidores de todo el mundo"
+      },
+      "traceroute": {
+        "title": "Traceroute",
+        "description": "Rastrea la ruta de red entre tu dispositivo y un servidor objetivo"
+      },
+      "portChecker": {
+        "title": "Verificador de Puertos",
+        "description": "Verifica si puertos específicos están abiertos o cerrados en un servidor"
+      },
+      "dnsLookup": {
+        "title": "Búsqueda DNS",
+        "description": "Consulta registros DNS para dominios y soluciona problemas de DNS"
+      },
+      "whoisLookup": {
+        "title": "Búsqueda WHOIS",
+        "description": "Obtén información de registro de dominios y detalles de propiedad"
+      },
+      "ipLocation": {
+        "title": "Ubicación IP",
+        "description": "Encuentra la ubicación geográfica de cualquier dirección IP"
+      },
+      "blacklistCheck": {
+        "title": "Verificación de Lista Negra",
+        "description": "Verifica si tu dirección IP está en lista negra en servidores de correo"
+      },
+      "emailBlacklist": {
+        "title": "Lista Negra de Correos",
+        "description": "Verifica si las direcciones de correo están en lista negra o comprometidas"
+      },
+      "ipv6Test": {
+        "title": "Prueba IPv6",
+        "description": "Prueba la conectividad y configuración IPv6"
+      }
+    },
+    "cta": {
+      "title": "Explora Más Herramientas de Red",
+      "subtitle": "Descubre herramientas adicionales de red para análisis integral de red, solución de problemas y capacidades de monitoreo.",
+      "viewAllTools": "Ver Todas las Herramientas",
+      "learnMore": "Aprende Más"
+    }
+  },
+  "tools": {
+    "title": "Herramientas de Red",
+    "description": "Herramientas profesionales de red para desarrolladores y profesionales de TI",
+    "speedTest": {
+      "title": "Prueba de Velocidad de Internet",
+      "description": "Prueba tus velocidades de descarga y carga con nuestra herramienta precisa de prueba de velocidad",
+      "startTest": "Iniciar Prueba de Velocidad",
+      "stopTest": "Detener Prueba",
+      "downloadSpeed": "Velocidad de Descarga",
+      "uploadSpeed": "Velocidad de Carga",
+      "ping": "Ping",
+      "jitter": "Jitter",
+      "packetLoss": "Pérdida de Paquetes",
+      "serverLocation": "Ubicación del Servidor",
+      "isp": "ISP",
+      "ipAddress": "Dirección IP"
+    },
+    "pingTest": {
+      "title": "Herramienta de Prueba de Ping",
+      "description": "Prueba la conectividad y latencia con servidores de todo el mundo",
+      "hostname": "Nombre de Host o Dirección IP",
+      "startPing": "Iniciar Ping",
+      "stopPing": "Detener Ping",
+      "results": "Resultados de Ping",
+      "average": "Promedio",
+      "minimum": "Mínimo",
+      "maximum": "Máximo",
+      "packetsSent": "Paquetes Enviados",
+      "packetsReceived": "Paquetes Recibidos",
+      "packetLoss": "Pérdida de Paquetes"
+    },
+    "traceroute": {
+      "title": "Herramienta Traceroute",
+      "description": "Rastrea la ruta de red entre tu dispositivo y un servidor objetivo",
+      "hostname": "Nombre de Host o Dirección IP",
+      "startTrace": "Iniciar Traceroute",
+      "stopTrace": "Detener Rastreo",
+      "hop": "Salto",
+      "ip": "Dirección IP",
+      "hostname": "Nombre de Host",
+      "responseTime": "Tiempo de Respuesta",
+      "status": "Estado"
+    },
+    "portChecker": {
+      "title": "Verificador de Puertos",
+      "description": "Verifica si puertos específicos están abiertos o cerrados en un servidor",
+      "hostname": "Nombre de Host o Dirección IP",
+      "port": "Puerto",
+      "checkPort": "Verificar Puerto",
+      "results": "Resultados de Verificación de Puerto",
+      "open": "Abierto",
+      "closed": "Cerrado",
+      "filtered": "Filtrado",
+      "commonPorts": "Puertos Comunes"
+    },
+    "dnsLookup": {
+      "title": "Herramienta de Búsqueda DNS",
+      "description": "Consulta registros DNS para dominios y soluciona problemas de DNS",
+      "domain": "Nombre de Dominio",
+      "recordType": "Tipo de Registro",
+      "lookup": "Buscar DNS",
+      "results": "Resultados de Búsqueda DNS",
+      "name": "Nombre",
+      "type": "Tipo",
+      "value": "Valor",
+      "ttl": "TTL"
+    },
+    "whoisLookup": {
+      "title": "Herramienta de Búsqueda WHOIS",
+      "description": "Obtén información de registro de dominios y detalles de propiedad",
+      "domain": "Nombre de Dominio",
+      "lookup": "Buscar WHOIS",
+      "results": "Resultados WHOIS",
+      "registrar": "Registrador",
+      "creationDate": "Fecha de Creación",
+      "expiryDate": "Fecha de Expiración",
+      "nameServers": "Servidores de Nombres",
+      "status": "Estado"
+    },
+    "ipLocation": {
+      "title": "Búsqueda de Ubicación IP",
+      "description": "Encuentra la ubicación geográfica de cualquier dirección IP",
+      "ipAddress": "Dirección IP",
+      "lookup": "Buscar Ubicación",
+      "results": "Resultados de Ubicación",
+      "country": "País",
+      "region": "Región",
+      "city": "Ciudad",
+      "isp": "ISP",
+      "timezone": "Zona Horaria",
+      "coordinates": "Coordenadas"
+    },
+    "blacklistCheck": {
+      "title": "Verificador de Lista Negra IP",
+      "description": "Verifica si tu dirección IP está en lista negra en servidores de correo",
+      "ipAddress": "Dirección IP",
+      "checkBlacklist": "Verificar Lista Negra",
+      "results": "Resultados de Verificación de Lista Negra",
+      "blacklisted": "En Lista Negra",
+      "clean": "Limpio",
+      "blacklistName": "Nombre de Lista Negra",
+      "status": "Estado"
+    },
+    "emailBlacklist": {
+      "title": "Verificador de Lista Negra de Correos",
+      "description": "Verifica si las direcciones de correo están en lista negra o comprometidas",
+      "email": "Dirección de Correo",
+      "checkEmail": "Verificar Correo",
+      "results": "Resultados de Verificación de Correo",
+      "breached": "Comprometido",
+      "safe": "Seguro",
+      "breachName": "Nombre de Violación",
+      "date": "Fecha"
+    },
+    "ipv6Test": {
+      "title": "Herramienta de Prueba IPv6",
+      "description": "Prueba la conectividad y configuración IPv6",
+      "startTest": "Iniciar Prueba IPv6",
+      "results": "Resultados de Prueba IPv6",
+      "ipv6Supported": "IPv6 Soportado",
+      "ipv6Address": "Dirección IPv6",
+      "connectivity": "Conectividad",
+      "dns": "Resolución DNS"
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Últimos artículos sobre redes, ciberseguridad y tecnología",
+    "readMore": "Leer Más",
+    "publishedOn": "Publicado el",
+    "author": "Autor",
+    "tags": "Etiquetas",
+    "relatedPosts": "Artículos Relacionados",
+    "noPosts": "No hay artículos de blog disponibles"
+  },
+  "contact": {
+    "title": "Contáctanos",
+    "description": "Ponte en contacto con nosotros para soporte, comentarios o consultas comerciales",
+    "form": {
+      "name": "Nombre",
+      "email": "Correo Electrónico",
+      "subject": "Asunto",
+      "message": "Mensaje",
+      "send": "Enviar Mensaje",
+      "sending": "Enviando...",
+      "sent": "¡Mensaje enviado exitosamente!",
+      "error": "Error al enviar mensaje"
+    },
+    "faq": {
+      "title": "Preguntas Frecuentes",
+      "whatIsMyIp": {
+        "question": "¿Qué es mi dirección IP?",
+        "answer": "Tu dirección IP es un identificador único asignado a tu dispositivo cuando te conectas a internet. Permite que otros dispositivos y servidores se comuniquen con tu dispositivo."
+      },
+      "whyCheckIp": {
+        "question": "¿Por qué debería verificar mi dirección IP?",
+        "answer": "Verificar tu dirección IP te ayuda a entender tu identidad en línea, solucionar problemas de red y asegurar tu privacidad y seguridad."
+      },
+      "ipLocation": {
+        "question": "¿Qué tan precisa es la detección de ubicación IP?",
+        "answer": "La detección de ubicación IP es generalmente precisa a nivel de ciudad, pero puede no ser precisa para tu ubicación exacta debido a varios factores como el uso de VPN y el enrutamiento del ISP."
+      }
+    }
+  },
+  "admin": {
+    "login": {
+      "title": "Inicio de Sesión de Administrador",
+      "email": "Correo Electrónico",
+      "password": "Contraseña",
+      "login": "Iniciar Sesión",
+      "error": "Credenciales inválidas"
+    },
+    "dashboard": {
+      "title": "Panel de Administrador",
+      "overview": "Resumen",
+      "blog": "Gestión de Blog",
+      "users": "Gestión de Usuarios",
+      "settings": "Configuración",
+      "logout": "Cerrar Sesión"
+    }
+  },
+  "footer": {
+    "description": "Herramientas profesionales de red para desarrolladores y profesionales de TI",
+    "quickLinks": "Enlaces Rápidos",
+    "tools": "Herramientas",
+    "legal": "Legal",
+    "social": "Social",
+    "copyright": "© 2024 WhatIsMyIP. Todos los derechos reservados.",
+    "contactUs": "Contáctanos"
+  },
+  "errors": {
+    "404": {
+      "title": "Página No Encontrada",
+      "description": "La página que buscas no existe.",
+      "backHome": "Volver al Inicio"
+    },
+    "500": {
+      "title": "Error del Servidor",
+      "description": "Algo salió mal en nuestro lado. Por favor, inténtalo de nuevo más tarde.",
+      "retry": "Intentar de Nuevo"
+    },
+    "network": {
+      "title": "Error de Red",
+      "description": "No se puede conectar al servidor. Por favor, verifica tu conexión a internet.",
+      "retry": "Reintentar"
+    }
+  },
+  "seo": {
+    "home": {
+      "title": "WhatIsMyIP - Verifica Tu Dirección IP Pública, Ubicación e ISP",
+      "description": "Verifica tu dirección IP pública, ubicación, ISP y más. Herramientas profesionales de red para prueba de velocidad, ping, traceroute, búsqueda DNS y WHOIS."
+    },
+    "tools": {
+      "title": "Herramientas de Red - Prueba de Velocidad, Ping, Traceroute y Más",
+      "description": "Herramientas profesionales de red para pruebas de velocidad, ping, traceroute, verificación de puertos, búsqueda DNS, WHOIS y servicios de ubicación IP."
+    },
+    "blog": {
+      "title": "Blog - Artículos de Redes y Ciberseguridad",
+      "description": "Últimos artículos sobre redes, ciberseguridad, direcciones IP y tecnología. Mantente informado sobre seguridad de internet y gestión de redes."
+    },
+    "contact": {
+      "title": "Contáctanos - Obtén Soporte y Comentarios",
+      "description": "Contacta WhatIsMyIP para soporte, comentarios o consultas comerciales. Estamos aquí para ayudar con todas tus necesidades de herramientas de red."
+    }
+  }
+} 

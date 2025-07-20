@@ -1,0 +1,119 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "copy": "复制",
+    "copied": "已复制！",
+    "refresh": "刷新",
+    "back": "返回",
+    "next": "下一步",
+    "previous": "上一步",
+    "submit": "提交",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "view": "查看",
+    "search": "搜索",
+    "filter": "筛选",
+    "sort": "排序",
+    "close": "关闭",
+    "open": "打开",
+    "yes": "是",
+    "no": "否",
+    "unknown": "未知",
+    "notAvailable": "不可用"
+  },
+  "navigation": {
+    "home": "首页",
+    "tools": "工具",
+    "blog": "博客",
+    "contact": "联系我们",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "admin": "管理员",
+    "login": "登录",
+    "logout": "退出",
+    "dashboard": "仪表板",
+    "language": "语言",
+    "ipLocation": "IP位置",
+    "portChecker": "端口检查器",
+    "dnsLookup": "DNS查询",
+    "speedTest": "速度测试"
+  },
+  "home": {
+    "title": "WhatIsMyIP - 检查您的公网IP地址",
+    "description": "发现您的公网IP地址、位置、ISP信息等。为开发人员和IT专业人员提供的专业网络工具。",
+    "hero": {
+      "title": "您的IP信息",
+      "subtitle": "关于您互联网连接的实时信息",
+      "publicIp": "您的公网IP地址",
+      "location": "位置",
+      "isp": "ISP",
+      "timezone": "时区",
+      "browser": "浏览器",
+      "callingCode": "电话区号",
+      "currency": "货币"
+    },
+    "tools": {
+      "title": "网络工具",
+      "subtitle": "用于网络分析、安全测试和故障排除的专业工具",
+      "speedTest": {
+        "title": "速度测试",
+        "description": "测试您的互联网连接速度和性能"
+      },
+      "pingTest": {
+        "title": "Ping测试",
+        "description": "检查与全球服务器的延迟和连接性"
+      },
+      "traceroute": {
+        "title": "路由跟踪",
+        "description": "跟踪您的设备与目标服务器之间的网络路径"
+      },
+      "portChecker": {
+        "title": "端口检查器",
+        "description": "检查服务器上特定端口是否开放或关闭"
+      },
+      "dnsLookup": {
+        "title": "DNS查询",
+        "description": "查询域名的DNS记录并解决DNS问题"
+      },
+      "whoisLookup": {
+        "title": "WHOIS查询",
+        "description": "获取域名注册信息和所有权详情"
+      },
+      "ipLocation": {
+        "title": "IP位置",
+        "description": "查找任何IP地址的地理位置"
+      },
+      "blacklistCheck": {
+        "title": "黑名单检查",
+        "description": "检查您的IP地址是否在邮件服务器的黑名单上"
+      },
+      "emailBlacklist": {
+        "title": "邮件黑名单",
+        "description": "检查邮件地址是否在黑名单上或被泄露"
+      },
+      "ipv6Test": {
+        "title": "IPv6测试",
+        "description": "测试IPv6连接和配置"
+      }
+    },
+    "cta": {
+      "title": "探索更多网络工具",
+      "subtitle": "发现用于全面网络分析、故障排除和监控功能的额外网络工具。",
+      "viewAllTools": "查看所有工具",
+      "learnMore": "了解更多"
+    }
+  },
+  "footer": {
+    "description": "为开发人员和IT专业人员提供的专业网络工具",
+    "quickLinks": "快速链接",
+    "tools": "工具",
+    "legal": "法律",
+    "social": "社交",
+    "copyright": "© 2024 WhatIsMyIP. 保留所有权利。",
+    "contactUs": "联系我们"
+  }
+} 

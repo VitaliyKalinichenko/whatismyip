@@ -1,0 +1,335 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "refresh": "Refresh",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "close": "Close",
+    "open": "Open",
+    "yes": "Yes",
+    "no": "No",
+    "unknown": "Unknown",
+    "notAvailable": "Not Available"
+  },
+  "navigation": {
+    "home": "Home",
+    "tools": "Tools",
+    "blog": "Blog",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "admin": "Admin",
+    "login": "Login",
+    "logout": "Logout",
+    "dashboard": "Dashboard",
+    "language": "Language",
+    "ipLocation": "IP Location",
+    "portChecker": "Port Checker",
+    "dnsLookup": "DNS Lookup",
+    "speedTest": "Speed Test"
+  },
+  "home": {
+    "title": "WhatIsMyIP",
+    "description": "Discover your public IP address, location, ISP information, and more. Professional networking tools for developers and IT professionals.",
+    "hero": {
+      "title": "Your IP Information",
+      "subtitle": "Real-time information about your internet connection",
+      "publicIp": "Your Public IP Address",
+      "location": "Location",
+      "isp": "ISP",
+      "timezone": "Timezone",
+      "browser": "Browser",
+      "callingCode": "Calling Code",
+      "currency": "Currency"
+    },
+    "tools": {
+      "title": "Networking Tools",
+      "subtitle": "Professional tools for network analysis, security testing, and troubleshooting",
+      "speedTest": {
+        "title": "Speed Test",
+        "description": "Test your internet connection speed and performance"
+      },
+      "pingTest": {
+        "title": "Ping Test",
+        "description": "Check latency and connectivity to servers worldwide"
+      },
+      "traceroute": {
+        "title": "Traceroute",
+        "description": "Trace the network path between your device and a target server"
+      },
+      "portChecker": {
+        "title": "Port Checker",
+        "description": "Check if specific ports are open or closed on a server"
+      },
+      "dnsLookup": {
+        "title": "DNS Lookup",
+        "description": "Query DNS records for domains and troubleshoot DNS issues"
+      },
+      "whoisLookup": {
+        "title": "WHOIS Lookup",
+        "description": "Get domain registration information and ownership details"
+      },
+      "ipLocation": {
+        "title": "IP Location",
+        "description": "Find the geographical location of any IP address"
+      },
+      "blacklistCheck": {
+        "title": "Blacklist Check",
+        "description": "Check if your IP address is blacklisted on email servers"
+      },
+      "emailBlacklist": {
+        "title": "Email Blacklist",
+        "description": "Check if email addresses are blacklisted or compromised"
+      },
+      "ipv6Test": {
+        "title": "IPv6 Test",
+        "description": "Test IPv6 connectivity and configuration"
+      }
+    },
+    "cta": {
+      "title": "Explore More Network Tools",
+      "subtitle": "Discover additional networking tools for comprehensive network analysis, troubleshooting, and monitoring capabilities.",
+      "viewAllTools": "View All Tools",
+      "learnMore": "Learn More"
+    }
+  },
+  "tools": {
+    "title": "Network Tools",
+    "description": "Professional networking tools for developers, system administrators, and IT professionals. Diagnose network issues, analyze domains, and monitor connectivity.",
+    "speedTest": {
+      "title": "Internet Speed Test",
+      "description": "Test your download and upload speeds with our accurate speed testing tool",
+      "startTest": "Start Speed Test",
+      "stopTest": "Stop Test",
+      "downloadSpeed": "Download Speed",
+      "uploadSpeed": "Upload Speed",
+      "ping": "Ping",
+      "jitter": "Jitter",
+      "packetLoss": "Packet Loss",
+      "serverLocation": "Server Location",
+      "isp": "ISP",
+      "ipAddress": "IP Address"
+    },
+    "pingTest": {
+      "title": "Ping Test Tool",
+      "description": "Test connectivity and latency to servers worldwide",
+      "hostname": "Hostname or IP Address",
+      "startPing": "Start Ping",
+      "stopPing": "Stop Ping",
+      "results": "Ping Results",
+      "average": "Average",
+      "minimum": "Minimum",
+      "maximum": "Maximum",
+      "packetsSent": "Packets Sent",
+      "packetsReceived": "Packets Received",
+      "packetLoss": "Packet Loss"
+    },
+    "traceroute": {
+      "title": "Traceroute Tool",
+      "description": "Trace the network path between your device and a target server",
+      "hostname": "Hostname or IP Address",
+      "startTrace": "Start Traceroute",
+      "stopTrace": "Stop Trace",
+      "hop": "Hop",
+      "ip": "IP Address",
+      "hostname": "Hostname",
+      "responseTime": "Response Time",
+      "status": "Status"
+    },
+    "portChecker": {
+      "title": "Port Checker",
+      "description": "Check if specific ports are open or closed on a server",
+      "hostname": "Hostname or IP Address",
+      "port": "Port",
+      "checkPort": "Check Port",
+      "results": "Port Check Results",
+      "open": "Open",
+      "closed": "Closed",
+      "filtered": "Filtered",
+      "commonPorts": "Common Ports"
+    },
+    "dnsLookup": {
+      "title": "DNS Lookup Tool",
+      "description": "Query DNS records for domains and troubleshoot DNS issues",
+      "domain": "Domain Name",
+      "recordType": "Record Type",
+      "lookup": "Lookup DNS",
+      "results": "DNS Lookup Results",
+      "name": "Name",
+      "type": "Type",
+      "value": "Value",
+      "ttl": "TTL"
+    },
+    "whoisLookup": {
+      "title": "WHOIS Lookup Tool",
+      "description": "Get domain registration information and ownership details",
+      "domain": "Domain Name",
+      "lookup": "Lookup WHOIS",
+      "results": "WHOIS Results",
+      "registrar": "Registrar",
+      "creationDate": "Creation Date",
+      "expiryDate": "Expiry Date",
+      "nameServers": "Name Servers",
+      "status": "Status"
+    },
+    "ipLocation": {
+      "title": "IP Location Lookup",
+      "description": "Find the geographical location of any IP address",
+      "ipAddress": "IP Address",
+      "lookup": "Lookup Location",
+      "results": "Location Results",
+      "country": "Country",
+      "region": "Region",
+      "city": "City",
+      "isp": "ISP",
+      "timezone": "Timezone",
+      "coordinates": "Coordinates"
+    },
+    "blacklistCheck": {
+      "title": "IP Blacklist Checker",
+      "description": "Check if your IP address is blacklisted on email servers",
+      "ipAddress": "IP Address",
+      "checkBlacklist": "Check Blacklist",
+      "results": "Blacklist Check Results",
+      "blacklisted": "Blacklisted",
+      "clean": "Clean",
+      "blacklistName": "Blacklist Name",
+      "status": "Status"
+    },
+    "emailBlacklist": {
+      "title": "Email Blacklist Checker",
+      "description": "Check if email addresses are blacklisted or compromised",
+      "email": "Email Address",
+      "checkEmail": "Check Email",
+      "results": "Email Check Results",
+      "breached": "Breached",
+      "safe": "Safe",
+      "breachName": "Breach Name",
+      "date": "Date"
+    },
+    "ipv6Test": {
+      "title": "IPv6 Test Tool",
+      "description": "Test IPv6 connectivity and configuration",
+      "startTest": "Start IPv6 Test",
+      "results": "IPv6 Test Results",
+      "ipv6Supported": "IPv6 Supported",
+      "ipv6Address": "IPv6 Address",
+      "connectivity": "Connectivity",
+      "dns": "DNS Resolution"
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Latest articles about networking, cybersecurity, and technology",
+    "readMore": "Read More",
+    "publishedOn": "Published on",
+    "author": "Author",
+    "tags": "Tags",
+    "relatedPosts": "Related Posts",
+    "noPosts": "No blog posts available"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "description": "Get in touch with us for support, feedback, or business inquiries",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
+      "send": "Send Message",
+      "sending": "Sending...",
+      "sent": "Message sent successfully!",
+      "error": "Error sending message"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "whatIsMyIp": {
+        "question": "What is my IP address?",
+        "answer": "Your IP address is a unique identifier assigned to your device when you connect to the internet. It allows other devices and servers to communicate with your device."
+      },
+      "whyCheckIp": {
+        "question": "Why should I check my IP address?",
+        "answer": "Checking your IP address helps you understand your online identity, troubleshoot network issues, and ensure your privacy and security."
+      },
+      "ipLocation": {
+        "question": "How accurate is IP location detection?",
+        "answer": "IP location detection is generally accurate to the city level, but may not be precise for your exact location due to various factors like VPN usage and ISP routing."
+      }
+    }
+  },
+  "admin": {
+    "login": {
+      "title": "Admin Login",
+      "email": "Email",
+      "password": "Password",
+      "login": "Login",
+      "error": "Invalid credentials"
+    },
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "overview": "Overview",
+      "blog": "Blog Management",
+      "users": "User Management",
+      "settings": "Settings",
+      "logout": "Logout"
+    }
+  },
+  "footer": {
+    "description": "Professional networking tools for developers and IT professionals",
+    "quickLinks": "Quick Links",
+    "tools": "Tools",
+    "legal": "Legal",
+    "social": "Social",
+    "copyright": "© 2024 WhatIsMyIP. All rights reserved.",
+    "contactUs": "Contact Us"
+  },
+  "errors": {
+    "404": {
+      "title": "Page Not Found",
+      "description": "The page you're looking for doesn't exist.",
+      "backHome": "Back to Home"
+    },
+    "500": {
+      "title": "Server Error",
+      "description": "Something went wrong on our end. Please try again later.",
+      "retry": "Try Again"
+    },
+    "network": {
+      "title": "Network Error",
+      "description": "Unable to connect to the server. Please check your internet connection.",
+      "retry": "Retry"
+    }
+  },
+  "seo": {
+    "home": {
+      "title": "WhatIsMyIP - Check Your Public IP Address, Location & ISP",
+      "description": "Check your public IP address, location, ISP, and more. Professional networking tools for speed test, ping, traceroute, DNS lookup, and WHOIS lookup."
+    },
+    "tools": {
+      "title": "Network Tools - Speed Test, Ping, Traceroute & More",
+      "description": "Professional networking tools for speed testing, ping, traceroute, port checking, DNS lookup, WHOIS lookup, and IP location services."
+    },
+    "blog": {
+      "title": "Blog - Networking & Cybersecurity Articles",
+      "description": "Latest articles about networking, cybersecurity, IP addresses, and technology. Stay informed about internet security and network management."
+    },
+    "contact": {
+      "title": "Contact Us - Get Support & Feedback",
+      "description": "Contact WhatIsMyIP for support, feedback, or business inquiries. We're here to help with all your networking tool needs."
+    }
+  }
+} 

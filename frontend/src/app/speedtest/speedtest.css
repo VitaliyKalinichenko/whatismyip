@@ -1,0 +1,426 @@
+/* Custom animations for speedtest UI */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes speedometer-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+}
+
+@keyframes progress-bar {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+/* Speed gauge animations */
+.speed-gauge {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.speed-gauge-testing {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Speedometer canvas styles */
+.speedometer-canvas {
+  transition: transform 0.3s ease;
+}
+
+.speedometer-canvas:hover {
+  transform: scale(1.02);
+}
+
+/* Result cards */
+.result-card {
+  transition: all 0.3s ease;
+  animation: scaleIn 0.5s ease-out;
+}
+
+.result-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Progress bar animations */
+.progress-bar {
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: progress-shimmer 2s infinite;
+}
+
+@keyframes progress-shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Test phase indicators */
+.test-phase-indicator {
+  position: relative;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-align: center;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.test-phase-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Speed value display */
+.speed-display {
+  font-variant-numeric: tabular-nums;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: speedometer-pulse 2s infinite;
+}
+
+/* Server info card */
+.server-info {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.dark .server-info {
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+}
+
+/* Button animations */
+.test-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  min-height: 44px; /* Ensure touch target size */
+  touch-action: manipulation; /* Optimize for touch */
+}
+
+.test-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.test-button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.test-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Error message styles */
+.error-message {
+  animation: fadeInUp 0.4s ease-out;
+  border-left: 4px solid #ef4444;
+  padding-left: 1rem;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Enhanced Mobile Responsive Design */
+
+/* Large tablets and small desktops */
+@media (max-width: 1024px) {
+  .speedometer-canvas {
+    width: 100% !important;
+    max-width: 400px !important;
+    height: 400px !important;
+  }
+  
+  .result-card {
+    padding: 1.25rem !important;
+  }
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+  .speedometer-canvas {
+    width: 100% !important;
+    max-width: 350px !important;
+    height: 350px !important;
+  }
+  
+  .result-card {
+    margin-bottom: 1rem;
+    padding: 1rem !important;
+  }
+  
+  .test-phase-indicator {
+    font-size: 0.9rem;
+  }
+  
+  .speed-display {
+    font-size: 2rem !important;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 640px) {
+  .speedometer-canvas {
+    width: 100% !important;
+    max-width: 300px !important;
+    height: 300px !important;
+  }
+  
+  .result-card {
+    padding: 0.875rem !important;
+    margin-bottom: 0.875rem !important;
+  }
+  
+  .speed-display {
+    font-size: 1.75rem !important;
+  }
+  
+  .test-button {
+    min-height: 48px !important;
+    padding: 0.875rem 1.5rem !important;
+    font-size: 1rem !important;
+  }
+  
+  .test-phase-indicator {
+    font-size: 0.875rem !important;
+    padding: 0.875rem !important;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .speedometer-canvas {
+    width: 100% !important;
+    max-width: 280px !important;
+    height: 280px !important;
+  }
+  
+  .result-card {
+    padding: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .speed-display {
+    font-size: 1.5rem !important;
+  }
+  
+  .test-button {
+    min-height: 44px !important;
+    padding: 0.75rem 1.25rem !important;
+    font-size: 0.9rem !important;
+  }
+  
+  .test-phase-indicator {
+    font-size: 0.8rem !important;
+    padding: 0.75rem !important;
+  }
+}
+
+/* Landscape orientation optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+  .speedometer-canvas {
+    max-width: 250px !important;
+    height: 250px !important;
+  }
+  
+  .result-card {
+    padding: 0.75rem !important;
+  }
+  
+  .speed-display {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 320px) {
+  .speedometer-canvas {
+    max-width: 240px !important;
+    height: 240px !important;
+  }
+  
+  .result-card {
+    padding: 0.5rem !important;
+  }
+  
+  .speed-display {
+    font-size: 1.25rem !important;
+  }
+  
+  .test-button {
+    min-height: 44px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+/* Dark mode enhancements */
+.dark .speedometer-canvas {
+  border-color: #4a5568;
+}
+
+.dark .result-card {
+  background-color: #2d3748;
+  border-color: #4a5568;
+}
+
+.dark .progress-bar {
+  background-color: #4a5568;
+}
+
+/* Accessibility improvements */
+.test-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+.result-card:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Touch-friendly improvements */
+@media (pointer: coarse) {
+  .test-button {
+    min-height: 48px !important;
+    padding: 0.875rem 1.5rem !important;
+  }
+  
+  .result-card {
+    padding: 1rem !important;
+  }
+  
+  .speedometer-canvas:hover {
+    transform: none; /* Disable hover effects on touch devices */
+  }
+  
+  .result-card:hover {
+    transform: none; /* Disable hover effects on touch devices */
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .speed-display {
+    -webkit-text-fill-color: currentColor;
+    background: none;
+  }
+  
+  .test-phase-indicator {
+    background: #000;
+    color: #fff;
+    border: 2px solid #fff;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+} 

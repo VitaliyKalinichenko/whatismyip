@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: whatismyip-backend
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: chmod +x start.sh && ./start.sh
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: CORS_ORIGINS
+        value: https://your-vercel-domain.vercel.app
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: admin@whatismyip.com
+      - key: ADMIN_PASSWORD
+        value: SecurePassword123!
+    healthCheckPath: /health 

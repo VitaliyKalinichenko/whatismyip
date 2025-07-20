@@ -1,0 +1,119 @@
+{
+  "common": {
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "refresh": "Atualizar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "view": "Ver",
+    "search": "Pesquisar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "close": "Fechar",
+    "open": "Abrir",
+    "yes": "Sim",
+    "no": "Não",
+    "unknown": "Desconhecido",
+    "notAvailable": "Não disponível"
+  },
+  "navigation": {
+    "home": "Início",
+    "tools": "Ferramentas",
+    "blog": "Blog",
+    "contact": "Contato",
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Serviço",
+    "admin": "Administrador",
+    "login": "Entrar",
+    "logout": "Sair",
+    "dashboard": "Painel",
+    "language": "Idioma",
+    "ipLocation": "Localização IP",
+    "portChecker": "Verificador de portas",
+    "dnsLookup": "Consulta DNS",
+    "speedTest": "Teste de velocidade"
+  },
+  "home": {
+    "title": "WhatIsMyIP - Verifique seu endereço IP público",
+    "description": "Descubra seu endereço IP público, localização, informações do ISP e mais. Ferramentas de rede profissionais para desenvolvedores e profissionais de TI.",
+    "hero": {
+      "title": "Suas informações IP",
+      "subtitle": "Informações em tempo real sobre sua conexão com a internet",
+      "publicIp": "Seu endereço IP público",
+      "location": "Localização",
+      "isp": "ISP",
+      "timezone": "Fuso horário",
+      "browser": "Navegador",
+      "callingCode": "Código de discagem",
+      "currency": "Moeda"
+    },
+    "tools": {
+      "title": "Ferramentas de rede",
+      "subtitle": "Ferramentas profissionais para análise de rede, testes de segurança e solução de problemas",
+      "speedTest": {
+        "title": "Teste de velocidade",
+        "description": "Teste a velocidade e desempenho da sua conexão com a internet"
+      },
+      "pingTest": {
+        "title": "Teste de ping",
+        "description": "Verifique a latência e conectividade com servidores em todo o mundo"
+      },
+      "traceroute": {
+        "title": "Traceroute",
+        "description": "Rastreie o caminho da rede entre seu dispositivo e um servidor de destino"
+      },
+      "portChecker": {
+        "title": "Verificador de portas",
+        "description": "Verifique se portas específicas estão abertas ou fechadas em um servidor"
+      },
+      "dnsLookup": {
+        "title": "Consulta DNS",
+        "description": "Consulte registros DNS para domínios e resolva problemas de DNS"
+      },
+      "whoisLookup": {
+        "title": "Consulta WHOIS",
+        "description": "Obtenha informações de registro de domínio e detalhes de propriedade"
+      },
+      "ipLocation": {
+        "title": "Localização IP",
+        "description": "Encontre a localização geográfica de qualquer endereço IP"
+      },
+      "blacklistCheck": {
+        "title": "Verificação de lista negra",
+        "description": "Verifique se seu endereço IP está na lista negra em servidores de email"
+      },
+      "emailBlacklist": {
+        "title": "Lista negra de emails",
+        "description": "Verifique se endereços de email estão na lista negra ou comprometidos"
+      },
+      "ipv6Test": {
+        "title": "Teste IPv6",
+        "description": "Teste a conectividade e configuração IPv6"
+      }
+    },
+    "cta": {
+      "title": "Explore mais ferramentas de rede",
+      "subtitle": "Descubra ferramentas de rede adicionais para análise de rede abrangente, solução de problemas e capacidades de monitoramento.",
+      "viewAllTools": "Ver todas as ferramentas",
+      "learnMore": "Saiba mais"
+    }
+  },
+  "footer": {
+    "description": "Ferramentas de rede profissionais para desenvolvedores e profissionais de TI",
+    "quickLinks": "Links rápidos",
+    "tools": "Ferramentas",
+    "legal": "Legal",
+    "social": "Social",
+    "copyright": "© 2024 WhatIsMyIP. Todos os direitos reservados.",
+    "contactUs": "Entre em contato"
+  }
+} 

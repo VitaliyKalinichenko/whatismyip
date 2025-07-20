@@ -1,0 +1,335 @@
+{
+  "common": {
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "refresh": "Aktualisieren",
+    "back": "Zurück",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "submit": "Senden",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "view": "Anzeigen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "sort": "Sortieren",
+    "close": "Schließen",
+    "open": "Öffnen",
+    "yes": "Ja",
+    "no": "Nein",
+    "unknown": "Unbekannt",
+    "notAvailable": "Nicht verfügbar"
+  },
+  "navigation": {
+    "home": "Startseite",
+    "tools": "Tools",
+    "blog": "Blog",
+    "contact": "Kontakt",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen",
+    "admin": "Administrator",
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "dashboard": "Dashboard",
+    "language": "Sprache",
+    "ipLocation": "IP-Standort",
+    "portChecker": "Port-Checker",
+    "dnsLookup": "DNS-Lookup",
+    "speedTest": "Geschwindigkeitstest"
+  },
+  "home": {
+    "title": "WhatIsMyIP - Überprüfen Sie Ihre öffentliche IP-Adresse",
+    "description": "Entdecken Sie Ihre öffentliche IP-Adresse, Standort, ISP-Informationen und mehr. Professionelle Netzwerk-Tools für Entwickler und IT-Experten.",
+    "hero": {
+      "title": "Ihre IP-Informationen",
+      "subtitle": "Echtzeit-Informationen über Ihre Internetverbindung",
+      "publicIp": "Ihre öffentliche IP-Adresse",
+      "location": "Standort",
+      "isp": "ISP",
+      "timezone": "Zeitzone",
+      "browser": "Browser",
+      "callingCode": "Vorwahl",
+      "currency": "Währung"
+    },
+    "tools": {
+      "title": "Netzwerk-Tools",
+      "subtitle": "Professionelle Tools für Netzwerkanalyse, Sicherheitstests und Fehlerbehebung",
+      "speedTest": {
+        "title": "Geschwindigkeitstest",
+        "description": "Testen Sie die Geschwindigkeit und Leistung Ihrer Internetverbindung"
+      },
+      "pingTest": {
+        "title": "Ping-Test",
+        "description": "Überprüfen Sie Latenz und Konnektivität zu Servern weltweit"
+      },
+      "traceroute": {
+        "title": "Traceroute",
+        "description": "Verfolgen Sie den Netzwerkpfad zwischen Ihrem Gerät und einem Zielserver"
+      },
+      "portChecker": {
+        "title": "Port-Checker",
+        "description": "Überprüfen Sie, ob bestimmte Ports auf einem Server offen oder geschlossen sind"
+      },
+      "dnsLookup": {
+        "title": "DNS-Lookup",
+        "description": "Abfragen von DNS-Einträgen für Domains und Behebung von DNS-Problemen"
+      },
+      "whoisLookup": {
+        "title": "WHOIS-Lookup",
+        "description": "Erhalten Sie Domain-Registrierungsinformationen und Eigentümerdetails"
+      },
+      "ipLocation": {
+        "title": "IP-Standort",
+        "description": "Finden Sie den geografischen Standort einer beliebigen IP-Adresse"
+      },
+      "blacklistCheck": {
+        "title": "Blacklist-Prüfung",
+        "description": "Überprüfen Sie, ob Ihre IP-Adresse auf E-Mail-Servern auf der Blacklist steht"
+      },
+      "emailBlacklist": {
+        "title": "E-Mail-Blacklist",
+        "description": "Überprüfen Sie, ob E-Mail-Adressen auf der Blacklist stehen oder kompromittiert sind"
+      },
+      "ipv6Test": {
+        "title": "IPv6-Test",
+        "description": "Testen Sie IPv6-Konnektivität und -Konfiguration"
+      }
+    },
+    "cta": {
+      "title": "Entdecken Sie weitere Netzwerk-Tools",
+      "subtitle": "Entdecken Sie zusätzliche Netzwerk-Tools für umfassende Netzwerkanalyse, Fehlerbehebung und Überwachungsfunktionen.",
+      "viewAllTools": "Alle Tools anzeigen",
+      "learnMore": "Mehr erfahren"
+    }
+  },
+  "tools": {
+    "title": "Netzwerk-Tools",
+    "description": "Professionelle Netzwerk-Tools für Entwickler und IT-Experten",
+    "speedTest": {
+      "title": "Internet-Geschwindigkeitstest",
+      "description": "Testen Sie Ihre Download- und Upload-Geschwindigkeiten mit unserem präzisen Geschwindigkeitstest-Tool",
+      "startTest": "Geschwindigkeitstest starten",
+      "stopTest": "Test stoppen",
+      "downloadSpeed": "Download-Geschwindigkeit",
+      "uploadSpeed": "Upload-Geschwindigkeit",
+      "ping": "Ping",
+      "jitter": "Jitter",
+      "packetLoss": "Paketverlust",
+      "serverLocation": "Server-Standort",
+      "isp": "ISP",
+      "ipAddress": "IP-Adresse"
+    },
+    "pingTest": {
+      "title": "Ping-Test-Tool",
+      "description": "Testen Sie Konnektivität und Latenz zu Servern weltweit",
+      "hostname": "Hostname oder IP-Adresse",
+      "startPing": "Ping starten",
+      "stopPing": "Ping stoppen",
+      "results": "Ping-Ergebnisse",
+      "average": "Durchschnitt",
+      "minimum": "Minimum",
+      "maximum": "Maximum",
+      "packetsSent": "Gesendete Pakete",
+      "packetsReceived": "Empfangene Pakete",
+      "packetLoss": "Paketverlust"
+    },
+    "traceroute": {
+      "title": "Traceroute-Tool",
+      "description": "Verfolgen Sie den Netzwerkpfad zwischen Ihrem Gerät und einem Zielserver",
+      "hostname": "Hostname oder IP-Adresse",
+      "startTrace": "Traceroute starten",
+      "stopTrace": "Verfolgung stoppen",
+      "hop": "Sprung",
+      "ip": "IP-Adresse",
+      "hostname": "Hostname",
+      "responseTime": "Antwortzeit",
+      "status": "Status"
+    },
+    "portChecker": {
+      "title": "Port-Checker",
+      "description": "Überprüfen Sie, ob bestimmte Ports auf einem Server offen oder geschlossen sind",
+      "hostname": "Hostname oder IP-Adresse",
+      "port": "Port",
+      "checkPort": "Port prüfen",
+      "results": "Port-Prüfungsergebnisse",
+      "open": "Offen",
+      "closed": "Geschlossen",
+      "filtered": "Gefiltert",
+      "commonPorts": "Häufige Ports"
+    },
+    "dnsLookup": {
+      "title": "DNS-Lookup-Tool",
+      "description": "Abfragen von DNS-Einträgen für Domains und Behebung von DNS-Problemen",
+      "domain": "Domain-Name",
+      "recordType": "Eintragstyp",
+      "lookup": "DNS abfragen",
+      "results": "DNS-Lookup-Ergebnisse",
+      "name": "Name",
+      "type": "Typ",
+      "value": "Wert",
+      "ttl": "TTL"
+    },
+    "whoisLookup": {
+      "title": "WHOIS-Lookup-Tool",
+      "description": "Erhalten Sie Domain-Registrierungsinformationen und Eigentümerdetails",
+      "domain": "Domain-Name",
+      "lookup": "WHOIS abfragen",
+      "results": "WHOIS-Ergebnisse",
+      "registrar": "Registrar",
+      "creationDate": "Erstellungsdatum",
+      "expiryDate": "Ablaufdatum",
+      "nameServers": "Nameserver",
+      "status": "Status"
+    },
+    "ipLocation": {
+      "title": "IP-Standort-Lookup",
+      "description": "Finden Sie den geografischen Standort einer beliebigen IP-Adresse",
+      "ipAddress": "IP-Adresse",
+      "lookup": "Standort abfragen",
+      "results": "Standort-Ergebnisse",
+      "country": "Land",
+      "region": "Region",
+      "city": "Stadt",
+      "isp": "ISP",
+      "timezone": "Zeitzone",
+      "coordinates": "Koordinaten"
+    },
+    "blacklistCheck": {
+      "title": "IP-Blacklist-Checker",
+      "description": "Überprüfen Sie, ob Ihre IP-Adresse auf E-Mail-Servern auf der Blacklist steht",
+      "ipAddress": "IP-Adresse",
+      "checkBlacklist": "Blacklist prüfen",
+      "results": "Blacklist-Prüfungsergebnisse",
+      "blacklisted": "Auf Blacklist",
+      "clean": "Sauber",
+      "blacklistName": "Blacklist-Name",
+      "status": "Status"
+    },
+    "emailBlacklist": {
+      "title": "E-Mail-Blacklist-Checker",
+      "description": "Überprüfen Sie, ob E-Mail-Adressen auf der Blacklist stehen oder kompromittiert sind",
+      "email": "E-Mail-Adresse",
+      "checkEmail": "E-Mail prüfen",
+      "results": "E-Mail-Prüfungsergebnisse",
+      "breached": "Kompromittiert",
+      "safe": "Sicher",
+      "breachName": "Verletzungsname",
+      "date": "Datum"
+    },
+    "ipv6Test": {
+      "title": "IPv6-Test-Tool",
+      "description": "Testen Sie IPv6-Konnektivität und -Konfiguration",
+      "startTest": "IPv6-Test starten",
+      "results": "IPv6-Test-Ergebnisse",
+      "ipv6Supported": "IPv6 unterstützt",
+      "ipv6Address": "IPv6-Adresse",
+      "connectivity": "Konnektivität",
+      "dns": "DNS-Auflösung"
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Neueste Artikel über Netzwerke, Cybersicherheit und Technologie",
+    "readMore": "Weiterlesen",
+    "publishedOn": "Veröffentlicht am",
+    "author": "Autor",
+    "tags": "Tags",
+    "relatedPosts": "Verwandte Beiträge",
+    "noPosts": "Keine Blog-Beiträge verfügbar"
+  },
+  "contact": {
+    "title": "Kontakt",
+    "description": "Kontaktieren Sie uns für Support, Feedback oder geschäftliche Anfragen",
+    "form": {
+      "name": "Name",
+      "email": "E-Mail",
+      "subject": "Betreff",
+      "message": "Nachricht",
+      "send": "Nachricht senden",
+      "sending": "Senden...",
+      "sent": "Nachricht erfolgreich gesendet!",
+      "error": "Fehler beim Senden der Nachricht"
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "whatIsMyIp": {
+        "question": "Was ist meine IP-Adresse?",
+        "answer": "Ihre IP-Adresse ist ein eindeutiger Identifier, der Ihrem Gerät zugewiesen wird, wenn Sie sich mit dem Internet verbinden. Sie ermöglicht es anderen Geräten und Servern, mit Ihrem Gerät zu kommunizieren."
+      },
+      "whyCheckIp": {
+        "question": "Warum sollte ich meine IP-Adresse überprüfen?",
+        "answer": "Die Überprüfung Ihrer IP-Adresse hilft Ihnen, Ihre Online-Identität zu verstehen, Netzwerkprobleme zu beheben und Ihre Privatsphäre und Sicherheit zu gewährleisten."
+      },
+      "ipLocation": {
+        "question": "Wie genau ist die IP-Standorterkennung?",
+        "answer": "Die IP-Standorterkennung ist im Allgemeinen auf Stadtebene genau, kann aber aufgrund verschiedener Faktoren wie VPN-Nutzung und ISP-Routing nicht präzise für Ihren genauen Standort sein."
+      }
+    }
+  },
+  "admin": {
+    "login": {
+      "title": "Administrator-Anmeldung",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "login": "Anmelden",
+      "error": "Ungültige Anmeldedaten"
+    },
+    "dashboard": {
+      "title": "Administrator-Dashboard",
+      "overview": "Übersicht",
+      "blog": "Blog-Verwaltung",
+      "users": "Benutzerverwaltung",
+      "settings": "Einstellungen",
+      "logout": "Abmelden"
+    }
+  },
+  "footer": {
+    "description": "Professionelle Netzwerk-Tools für Entwickler und IT-Experten",
+    "quickLinks": "Schnelllinks",
+    "tools": "Tools",
+    "legal": "Rechtliches",
+    "social": "Social",
+    "copyright": "© 2024 WhatIsMyIP. Alle Rechte vorbehalten.",
+    "contactUs": "Kontakt"
+  },
+  "errors": {
+    "404": {
+      "title": "Seite nicht gefunden",
+      "description": "Die gesuchte Seite existiert nicht.",
+      "backHome": "Zurück zur Startseite"
+    },
+    "500": {
+      "title": "Serverfehler",
+      "description": "Etwas ist auf unserer Seite schiefgelaufen. Bitte versuchen Sie es später erneut.",
+      "retry": "Erneut versuchen"
+    },
+    "network": {
+      "title": "Netzwerkfehler",
+      "description": "Verbindung zum Server nicht möglich. Bitte überprüfen Sie Ihre Internetverbindung.",
+      "retry": "Wiederholen"
+    }
+  },
+  "seo": {
+    "home": {
+      "title": "WhatIsMyIP - Überprüfen Sie Ihre öffentliche IP-Adresse, Standort und ISP",
+      "description": "Überprüfen Sie Ihre öffentliche IP-Adresse, Standort, ISP und mehr. Professionelle Netzwerk-Tools für Geschwindigkeitstest, Ping, Traceroute, DNS-Lookup und WHOIS."
+    },
+    "tools": {
+      "title": "Netzwerk-Tools - Geschwindigkeitstest, Ping, Traceroute und mehr",
+      "description": "Professionelle Netzwerk-Tools für Geschwindigkeitstests, Ping, Traceroute, Port-Prüfung, DNS-Lookup, WHOIS und IP-Standort-Services."
+    },
+    "blog": {
+      "title": "Blog - Netzwerk- und Cybersicherheitsartikel",
+      "description": "Neueste Artikel über Netzwerke, Cybersicherheit, IP-Adressen und Technologie. Bleiben Sie über Internetsicherheit und Netzwerkmanagement informiert."
+    },
+    "contact": {
+      "title": "Kontakt - Support und Feedback erhalten",
+      "description": "Kontaktieren Sie WhatIsMyIP für Support, Feedback oder geschäftliche Anfragen. Wir sind hier, um bei allen Ihren Netzwerk-Tool-Anforderungen zu helfen."
+    }
+  }
+} 
