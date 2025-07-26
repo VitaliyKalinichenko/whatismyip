@@ -45,8 +45,8 @@
 ENVIRONMENT=production
 CORS_ORIGINS=https://your-frontend-url.vercel.app
 JWT_SECRET_KEY=[auto-generated]
-ADMIN_EMAIL=admin@whatismyip.com
-ADMIN_PASSWORD=SecurePassword123!
+ADMIN_EMAIL=veremij@ukr.net
+ADMIN_PASSWORD=Qwerty!67890
 ```
 
 ### Frontend (Vercel)

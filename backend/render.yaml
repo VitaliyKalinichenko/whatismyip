@@ -8,11 +8,11 @@ services:
       - key: ENVIRONMENT
         value: production
       - key: CORS_ORIGINS
-        value: https://your-vercel-domain.vercel.app
+        value: https://whatismyip.world,https://www.whatismyip.world
       - key: JWT_SECRET_KEY
         generateValue: true
       - key: ADMIN_EMAIL
-        value: admin@whatismyip.com
+        value: veremij@ukr.net
       - key: ADMIN_PASSWORD
-        value: SecurePassword123!
-    healthCheckPath: /health 
+        value: Qwerty!67890
+    healthCheckPath: /health

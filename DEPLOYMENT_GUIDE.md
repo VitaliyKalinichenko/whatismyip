@@ -30,8 +30,8 @@ This guide will help you deploy your WhatIsMyIP application to production using:
 ENVIRONMENT=production
 CORS_ORIGINS=https://your-vercel-domain.vercel.app
 JWT_SECRET_KEY=[Render will generate this]
-ADMIN_EMAIL=admin@whatismyip.com
-ADMIN_PASSWORD=SecurePassword123!
+ADMIN_EMAIL=veremij@ukr.net
+ADMIN_PASSWORD=Qwerty!67890
 ```
 
 ### 1.3 Deploy Backend
