@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, MapPin, Clock } from "lucide-react";
 
@@ -35,8 +37,8 @@ export default function ContactPage() {
                 <Mail className="h-5 w-5 text-blue-500" />
                 <div>
                   <p className="font-medium">Email Support</p>
-                  <a 
-                    href="mailto:support@whatismyipworld.com" 
+                  <a
+                    href="mailto:support@whatismyipworld.com"
                     className="text-blue-600 hover:text-blue-700"
                   >
                     support@whatismyipworld.com
@@ -175,4 +177,4 @@ export default function ContactPage() {
       </div>
     </div>
   );
-} 
+}
