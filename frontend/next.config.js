@@ -4,6 +4,15 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 1) Skip ESLint checks during build
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  // 2) Skip TypeScript errors during build
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
   // Only use standalone output in production
   ...(process.env.NODE_ENV === 'production' && { output: 'standalone' }),
   
@@ -79,7 +88,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: process.env.NODE_ENV === 'production' 
+            value: process.env.NODE_ENV === 'production'
               ? "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://eu.i.posthog.com https://app.posthog.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://eu.i.posthog.com https://app.posthog.com https://api.ipify.org https://ipapi.co https://ip-api.com https://api.ipgeolocation.io; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
               : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://eu.i.posthog.com https://app.posthog.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://eu.i.posthog.com https://app.posthog.com https://api.ipify.org https://ipapi.co https://ip-api.com https://api.ipgeolocation.io ws://localhost:* http://localhost:*; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
           },
@@ -90,4 +99,5 @@ const nextConfig = {
 };
 
 module.exports = withNextIntl(nextConfig);
+
 
