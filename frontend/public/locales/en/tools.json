@@ -1,0 +1,26 @@
+{
+  "tools": {
+    "title": "Network Tools",
+    "description": "Check your IP, DNS, WHOIS, port status, and ping tests.",
+    "ipLocation": {
+      "title": "IP Location",
+      "description": "Find the geographic location of an IP address."
+    },
+    "portChecker": {
+      "title": "Port Checker",
+      "description": "Test if specific ports on your IP address are open or closed."
+    },
+    "dnsLookup": {
+      "title": "DNS Lookup",
+      "description": "Retrieve DNS records for a domain name."
+    },
+    "whoisLookup": {
+      "title": "WHOIS Lookup",
+      "description": "Get domain registration details and WHOIS information."
+    },
+    "pingTest": {
+      "title": "Ping Test",
+      "description": "Measure network latency by pinging an IP address."
+    }
+  }
+}
