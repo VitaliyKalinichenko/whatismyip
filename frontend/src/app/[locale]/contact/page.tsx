@@ -3,12 +3,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, MapPin, Clock } from "lucide-react";
 
-export const metadata = {
-  title: "Contact Us — WhatIsMyIPWorld",
-  description: "Get in touch with WhatIsMyIPWorld support team for questions, feedback, or technical assistance.",
-  keywords: "contact, support, help, feedback, questions, technical assistance"
-};
-
 export default function ContactPage() {
   return (
     <div className="container mx-auto px-4 py-8">
@@ -146,7 +140,7 @@ export default function ContactPage() {
               <div>
                 <h3 className="font-semibold mb-2">How accurate is the IP location information?</h3>
                 <p className="text-muted-foreground">
-                  Our IP location data is sourced from multiple databases and is typically accurate to the city level. 
+                  Our IP location data is sourced from multiple databases and is typically accurate to the city level.
                   However, exact precision can vary based on your ISP and location.
                 </p>
               </div>
@@ -164,7 +158,7 @@ export default function ContactPage() {
                   Yes, our tools are free to use for both personal and commercial purposes. We do ask that you don't abuse our services.
                 </p>
               </div>
-              
+
               <div>
                 <h3 className="font-semibold mb-2">Do you have an API?</h3>
                 <p className="text-muted-foreground">
