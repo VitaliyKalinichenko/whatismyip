@@ -30,6 +30,50 @@ interface BlogResponse {
   total_pages: number;
 }
 
+// Окремий компонент для тегів з інтерактивністю
+function TagButton({ 
+  tag, 
+  isSelected, 
+  onSelect 
+}: { 
+  tag: string; 
+  isSelected: boolean; 
+  onSelect: (tag: string) => void; 
+}) {
+  return (
+    <button
+      onClick={() => onSelect(tag)}
+      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+        isSelected
+          ? "bg-blue-600 text-white"
+          : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+      }`}
+    >
+      {tag}
+    </button>
+  );
+}
+
+// Окремий компонент для тегів в картці поста
+function PostTagBadge({ 
+  tag, 
+  onSelect 
+}: { 
+  tag: string; 
+  onSelect: (tag: string) => void; 
+}) {
+  return (
+    <Badge
+      variant="secondary"
+      className="text-xs cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900"
+      onClick={() => onSelect(tag)}
+    >
+      <Tag className="h-3 w-3 mr-1" />
+      {tag}
+    </Badge>
+  );
+}
+
 export default function BlogClient() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -89,6 +133,11 @@ export default function BlogClient() {
     e.preventDefault();
     // Search functionality can be implemented here
     // For now, we'll just filter on the frontend
+  };
+
+  const handleTagSelect = (tag: string) => {
+    setSelectedTag(selectedTag === tag ? null : tag);
+    setCurrentPage(1);
   };
 
   const formatDate = (dateString: string) => {
@@ -171,20 +220,12 @@ export default function BlogClient() {
               Filter by tag:
             </span>
             {availableTags.map((tag) => (
-              <button
+              <TagButton
                 key={tag}
-                onClick={() => {
-                  setSelectedTag(selectedTag === tag ? null : tag);
-                  setCurrentPage(1);
-                }}
-                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                  selectedTag === tag
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
-                }`}
-              >
-                {tag}
-              </button>
+                tag={tag}
+                isSelected={selectedTag === tag}
+                onSelect={handleTagSelect}
+              />
             ))}
           </div>
         )}
@@ -235,18 +276,11 @@ export default function BlogClient() {
                 {post.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-4">
                     {post.tags.map((tag) => (
-                      <Badge
+                      <PostTagBadge
                         key={tag}
-                        variant="secondary"
-                        className="text-xs cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900"
-                        onClick={() => {
-                          setSelectedTag(tag);
-                          setCurrentPage(1);
-                        }}
-                      >
-                        <Tag className="h-3 w-3 mr-1" />
-                        {tag}
-                      </Badge>
+                        tag={tag}
+                        onSelect={handleTagSelect}
+                      />
                     ))}
                   </div>
                 )}
@@ -340,4 +374,4 @@ export default function BlogClient() {
       </div>
     </div>
   );
-} 
+}
