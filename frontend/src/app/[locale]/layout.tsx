@@ -24,7 +24,6 @@ export default async function LocaleLayout({
 
   // Providing all messages to the client
   const messages = await getMessages({ locale });
-
   const metadata = localeMetadata[locale as keyof typeof localeMetadata];
   const dir = metadata?.dir || 'ltr';
 
@@ -35,4 +34,4 @@ export default async function LocaleLayout({
       </div>
     </NextIntlClientProvider>
   );
-} 
+}
