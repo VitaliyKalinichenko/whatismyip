@@ -3,6 +3,9 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { locales, localeMetadata } from '../../../i18n';
 
+// Тимчасово відключено SSG для всіх локалізованих сторінок
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 export async function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
