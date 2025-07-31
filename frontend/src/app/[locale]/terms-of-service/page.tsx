@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import { generateMetadata as generateMeta } from '@/lib/metadata';
 import TermsClient from './TermsClient';
 
@@ -10,6 +11,17 @@ export const metadata = generateMeta({
   keywords: "terms of service, legal, website terms, user agreement"
 });
 
-export default function TermsOfServicePage() {
+interface Props {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function TermsOfServicePage({ params }: Props) {
+  const { locale } = await params;
+  
+  // Terms of Service доступні лише англійською
+  if (locale !== 'en') {
+    notFound();
+  }
+
   return <TermsClient />;
 }
