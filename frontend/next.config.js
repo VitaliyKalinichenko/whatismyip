@@ -1,5 +1,4 @@
 const createNextIntlPlugin = require('next-intl/plugin');
-
 const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
@@ -12,7 +11,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-
   // Only use standalone output in production
   ...(process.env.NODE_ENV === 'production' && { output: 'standalone' }),
   
@@ -49,6 +47,7 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
   },
+
   async rewrites() {
     return [
       {
@@ -57,6 +56,25 @@ const nextConfig = {
       },
     ];
   },
+
+  // Додаємо редиректи для блогу та terms-of-service на англійську версію
+  async redirects() {
+    return [
+      // Редирект неанглійських блогів на англійський
+      {
+        source: '/(ar|de|es|fr|hi|it|ja|ko|pt|ru|uk|zh)/blog/:path*',
+        destination: '/en/blog/:path*',
+        permanent: false,
+      },
+      // Редирект неанглійських terms-of-service на англійський
+      {
+        source: '/(ar|de|es|fr|hi|it|ja|ko|pt|ru|uk|zh)/terms-of-service',
+        destination: '/en/terms-of-service',
+        permanent: false,
+      },
+    ];
+  },
+
   async headers() {
     return [
       {
@@ -99,5 +117,3 @@ const nextConfig = {
 };
 
 module.exports = withNextIntl(nextConfig);
-
-
