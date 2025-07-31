@@ -4,6 +4,7 @@ import GDPRConsent from '@/components/gdpr-cookie-consent';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { NextIntlClientProvider } from 'next-intl';
+import { Metadata } from 'next';
 import '@/app/globals.css';
 
 // Default messages for the root layout (fallback)
@@ -15,6 +16,16 @@ const defaultMessages = {
     tools: 'Tools',
     blog: 'Blog'
   }
+};
+
+// Додаємо metadataBase для виправлення попередження
+export const metadata: Metadata = {
+  metadataBase: new URL('https://whatismyip.com'),
+  title: {
+    default: 'WhatIsMyIP - Find Your IP Address & Network Tools',
+    template: '%s | WhatIsMyIP'
+  },
+  description: 'Discover your IP address, location, and use our network tools for DNS lookup, port checking, and more.',
 };
 
 export default function RootLayout({
@@ -53,4 +64,3 @@ export default function RootLayout({
     </html>
   );
 }
-
