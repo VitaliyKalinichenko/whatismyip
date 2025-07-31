@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { generateMetadata as generateMeta, pageMetadata } from '@/lib/metadata';
 import BlogClient from './blog-client';
@@ -5,7 +6,18 @@ import BlogClient from './blog-client';
 // Export metadata for SEO
 export const metadata = generateMeta(pageMetadata.blog);
 
-export default async function BlogPage() {
+interface Props {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function BlogPage({ params }: Props) {
+  const { locale } = await params;
+  
+  // Блог доступний лише англійською
+  if (locale !== 'en') {
+    notFound();
+  }
+
   const t = await getTranslations('blog');
   
   const articleSchema = {
@@ -42,4 +54,4 @@ export default async function BlogPage() {
       </div>
     </>
   );
-} 
+}
