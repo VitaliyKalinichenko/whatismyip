@@ -17,7 +17,7 @@ import Link from 'next/link';
 interface ToolItem {
   title: string;
   description: string;
-  icon: keyof typeof import('lucide-react');
+  icon: string;
   href: string;
   color: string;
   bgColor: string;
@@ -28,6 +28,20 @@ interface ToolsClientProps {
   title: string;
   description: string;
 }
+
+// Мапа іконок для безпечного використання
+const iconMap = {
+  MapPin,
+  Shield,
+  Search,
+  Network,
+  Wifi,
+  Globe,
+  Zap,
+  ArrowRight
+} as const;
+
+type IconName = keyof typeof iconMap;
 
 export default function ToolsClient({ tools, title, description }: ToolsClientProps) {
   return (
@@ -40,12 +54,12 @@ export default function ToolsClient({ tools, title, description }: ToolsClientPr
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {tools.map((tool, i) => {
-            const Icon = (import('lucide-react') as any)[tool.icon];
+            const IconComponent = iconMap[tool.icon as IconName] || Globe;
             return (
               <Card key={i} className="hover:shadow-lg transition-shadow duration-200">
                 <CardHeader>
                   <div className={`w-12 h-12 rounded-lg ${tool.bgColor} flex items-center justify-center mb-4`}>
-                    <Icon className={`h-6 w-6 ${tool.color}`} />
+                    <IconComponent className={`h-6 w-6 ${tool.color}`} />
                   </div>
                   <CardTitle className="text-xl">{tool.title}</CardTitle>
                   <CardDescription className="text-sm">{tool.description}</CardDescription>
