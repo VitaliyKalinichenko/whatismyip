@@ -3,8 +3,8 @@ from app.models.ip_models import PingTestRequest, PingTestResult
 import asyncio
 import logging
 import time
-import ping3
 import socket
+import aiohttp
 from typing import List, Optional
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 @limiter.limit("10/minute")  # 🔒 SECURITY FIX - Rate limiting for ping test
 async def run_ping_test(request: Request, ping_request: PingTestRequest):
     """
-    Run a real ping test to check network connectivity and latency.
+    Run a connectivity test using HTTP requests (cloud-friendly alternative to ICMP).
     """
     try:
         # 🔒 SECURITY FIX - Validate input to prevent injection attacks
@@ -35,65 +35,133 @@ async def run_ping_test(request: Request, ping_request: PingTestRequest):
         if not 1 <= ping_request.count <= 20:
             raise HTTPException(status_code=400, detail="Count must be between 1 and 20")
         
-        logger.info(f"Starting ping test to {ping_request.host} with {ping_request.count} packets")
+        logger.info(f"Starting HTTP ping test to {ping_request.host} with {ping_request.count} packets")
         
-        # Perform real ping test
-        ping_result = await perform_ping_test(ping_request.host, ping_request.count)
+        # Perform HTTP-based ping test (works better in cloud environments)
+        ping_result = await perform_http_ping_test(ping_request.host, ping_request.count)
         
-        logger.info(f"Ping test completed for {ping_request.host}: {ping_result.packets_received}/{ping_result.packets_sent} packets received")
+        logger.info(f"HTTP ping test completed for {ping_request.host}: {ping_result.packets_received}/{ping_result.packets_sent} packets received")
         
         return ping_result
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Ping test failed for {request.host}: {e}")
-        raise HTTPException(status_code=500, detail=f"Ping test failed: {str(e)}")
+        logger.error(f"HTTP ping test failed for {ping_request.host}: {e}")
+        raise HTTPException(status_code=500, detail=f"HTTP ping test failed: {str(e)}")
 
-async def perform_ping_test(host: str, count: int, timeout: float = 3.0) -> PingTestResult:
+async def perform_http_ping_test(host: str, count: int, timeout: float = 5.0) -> PingTestResult:
     """
-    Perform real ping test using ping3 library.
+    Perform HTTP-based connectivity test as alternative to ICMP ping.
+    This works in cloud environments where ICMP is restricted.
     """
     try:
-        # Resolve hostname to IP if needed
+        # Prepare URLs to test
+        test_urls = []
+        
+        # If host doesn't have protocol, try both HTTPS and HTTP
+        if not host.startswith(('http://', 'https://')):
+            test_urls = [f"https://{host}", f"http://{host}"]
+        else:
+            test_urls = [host]
+        
+        # Resolve IP address for display
+        target_ip = host
         try:
-            target_ip = socket.gethostbyname(host)
-            logger.info(f"Resolved {host} to {target_ip}")
+            if not host.startswith(('http://', 'https://')):
+                target_ip = socket.gethostbyname(host)
+                logger.info(f"Resolved {host} to {target_ip}")
         except socket.gaierror:
-            logger.error(f"Failed to resolve hostname: {host}")
-            raise Exception(f"Failed to resolve hostname: {host}")
+            logger.warning(f"Could not resolve {host}, using as-is")
+            target_ip = host
         
         ping_times = []
         timestamps = []
         packets_sent = count
         packets_received = 0
+        working_url = None
         
-        # Perform individual ping tests
-        for i in range(count):
-            try:
-                logger.debug(f"Sending ping {i+1}/{count} to {target_ip}")
-                
-                # Perform ping
-                response_time = ping3.ping(target_ip, timeout=timeout)
-                
-                if response_time is not None:
-                    # Convert to milliseconds and round
-                    ping_time_ms = round(response_time * 1000, 1)
-                    ping_times.append(ping_time_ms)
-                    timestamps.append(f"{ping_time_ms}ms")
-                    packets_received += 1
-                    logger.debug(f"Ping {i+1}: {ping_time_ms}ms")
-                else:
+        # Find a working URL
+        connector = aiohttp.TCPConnector(limit=10, limit_per_host=5)
+        timeout_config = aiohttp.ClientTimeout(total=timeout, connect=timeout/2)
+        
+        async with aiohttp.ClientSession(
+            connector=connector, 
+            timeout=timeout_config,
+            headers={'User-Agent': 'WhatIsMyIP-PingTest/1.0'}
+        ) as session:
+            
+            # Test which URL works
+            for test_url in test_urls:
+                try:
+                    logger.debug(f"Testing URL: {test_url}")
+                    start_time = time.time()
+                    
+                    async with session.head(
+                        test_url,
+                        allow_redirects=True,
+                        ssl=False  # Allow self-signed certificates
+                    ) as response:
+                        response_time = (time.time() - start_time) * 1000
+                        
+                        # Accept any response (even errors) as "reachable"
+                        if response.status < 600:
+                            working_url = test_url
+                            logger.info(f"Found working URL: {test_url} (status: {response.status}, time: {response_time:.1f}ms)")
+                            break
+                            
+                except Exception as e:
+                    logger.debug(f"Failed to connect to {test_url}: {e}")
+                    continue
+            
+            if not working_url:
+                logger.error(f"Could not establish connection to any URL for {host}")
+                return PingTestResult(
+                    host=host,
+                    target_ip=target_ip,
+                    packets_sent=packets_sent,
+                    packets_received=0,
+                    packet_loss=100.0,
+                    min_time=0,
+                    max_time=0,
+                    avg_time=0,
+                    timestamps=["timeout"] * count,
+                    success=False
+                )
+            
+            # Perform the actual "ping" tests
+            for i in range(count):
+                try:
+                    logger.debug(f"HTTP ping {i+1}/{count} to {working_url}")
+                    start_time = time.time()
+                    
+                    async with session.head(
+                        working_url,
+                        allow_redirects=True,
+                        ssl=False
+                    ) as response:
+                        end_time = time.time()
+                        response_time_ms = round((end_time - start_time) * 1000, 1)
+                        
+                        # Accept any response as successful connectivity
+                        ping_times.append(response_time_ms)
+                        timestamps.append(f"{response_time_ms}ms")
+                        packets_received += 1
+                        logger.debug(f"HTTP ping {i+1}: {response_time_ms}ms (HTTP {response.status})")
+                        
+                except asyncio.TimeoutError:
                     timestamps.append("timeout")
-                    logger.debug(f"Ping {i+1}: timeout")
+                    logger.debug(f"HTTP ping {i+1}: timeout")
+                except aiohttp.ClientError as e:
+                    timestamps.append("connection_error")
+                    logger.debug(f"HTTP ping {i+1}: connection error - {e}")
+                except Exception as e:
+                    timestamps.append("error")
+                    logger.debug(f"HTTP ping {i+1}: error - {e}")
                 
-                # Small delay between pings (except for the last one)
+                # Small delay between requests (except for the last one)
                 if i < count - 1:
                     await asyncio.sleep(0.5)
-                    
-            except Exception as e:
-                logger.warning(f"Ping {i+1} failed: {e}")
-                timestamps.append("error")
         
         # Calculate statistics
         if ping_times:
@@ -105,7 +173,7 @@ async def perform_ping_test(host: str, count: int, timeout: float = 3.0) -> Ping
         
         packet_loss = round(((packets_sent - packets_received) / packets_sent) * 100, 1)
         
-        logger.info(f"Ping statistics for {host}: {packets_received}/{packets_sent} received, {packet_loss}% loss, avg={avg_time}ms")
+        logger.info(f"HTTP ping statistics for {host}: {packets_received}/{packets_sent} received, {packet_loss}% loss, avg={avg_time}ms")
         
         return PingTestResult(
             host=host,
@@ -121,8 +189,8 @@ async def perform_ping_test(host: str, count: int, timeout: float = 3.0) -> Ping
         )
         
     except Exception as e:
-        logger.error(f"Ping test execution failed for {host}: {e}")
-        raise Exception(f"Ping test failed: {str(e)}")
+        logger.error(f"HTTP ping test execution failed for {host}: {e}")
+        raise Exception(f"HTTP ping test failed: {str(e)}")
 
 @router.get("/ping-test/simple")
 async def run_ping_test_simple(host: str, count: int = 4):
@@ -130,18 +198,21 @@ async def run_ping_test_simple(host: str, count: int = 4):
     Simple ping test endpoint with query parameters.
     """
     try:
-        request = PingTestRequest(host=host, count=count)
-        return await run_ping_test(request)
+        # Create a mock request object for the limiter
+        mock_request = type('MockRequest', (), {'client': type('Client', (), {'host': '127.0.0.1'})()})()
+        
+        ping_request = PingTestRequest(host=host, count=count)
+        return await run_ping_test(mock_request, ping_request)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ping test failed: {str(e)}")
 
 @router.get("/ping-test/traceroute")
 async def run_traceroute(host: str, max_hops: int = 30):
     """
-    Perform a simple traceroute-like test showing network path.
+    Perform a simple HTTP-based traceroute-like test.
     """
     try:
-        logger.info(f"Starting traceroute to {host} with max {max_hops} hops")
+        logger.info(f"Starting HTTP traceroute to {host} with max {max_hops} hops")
         
         # Resolve target
         try:
@@ -151,21 +222,20 @@ async def run_traceroute(host: str, max_hops: int = 30):
         
         hops = []
         
-        # For simplicity, we'll just do a series of pings with increasing timeouts
-        # This is not a real traceroute but gives basic connectivity info
+        # HTTP-based "traceroute" with different timeouts
         timeout_values = [0.5, 1.0, 2.0, 3.0, 5.0]
         
         for i, timeout in enumerate(timeout_values[:min(max_hops, 5)], 1):
             try:
-                response_time = ping3.ping(target_ip, timeout=timeout)
+                # Try HTTP ping with this timeout
+                result = await perform_http_ping_test(host, 1, timeout)
                 
-                if response_time is not None:
-                    ping_time_ms = round(response_time * 1000, 1)
+                if result.success:
                     hops.append({
                         "hop": i,
                         "ip": target_ip,
                         "hostname": host,
-                        "response_time": ping_time_ms,
+                        "response_time": result.avg_time,
                         "status": "success"
                     })
                     # If we get a response, we've reached the target
@@ -199,8 +269,8 @@ async def run_traceroute(host: str, max_hops: int = 30):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Traceroute failed for {host}: {e}")
-        raise HTTPException(status_code=500, detail=f"Traceroute failed: {str(e)}")
+        logger.error(f"HTTP traceroute failed for {host}: {e}")
+        raise HTTPException(status_code=500, detail=f"HTTP traceroute failed: {str(e)}")
 
 @router.get("/ping-test/bulk")
 async def run_bulk_ping_test(
@@ -221,21 +291,21 @@ async def run_bulk_ping_test(
         if not 1 <= count <= 10:
             raise HTTPException(status_code=400, detail="Count must be between 1 and 10")
         
-        logger.info(f"Starting bulk ping test for {len(host_list)} hosts")
+        logger.info(f"Starting bulk HTTP ping test for {len(host_list)} hosts")
         
         results = []
         
         # Test each host
         for host in host_list:
             try:
-                ping_result = await perform_ping_test(host, count)
+                ping_result = await perform_http_ping_test(host, count)
                 results.append({
                     "host": host,
                     "status": "success",
                     "data": ping_result.dict()
                 })
             except Exception as e:
-                logger.warning(f"Ping test failed for {host}: {e}")
+                logger.warning(f"HTTP ping test failed for {host}: {e}")
                 results.append({
                     "host": host,
                     "status": "error",
@@ -243,7 +313,7 @@ async def run_bulk_ping_test(
                 })
         
         successful_tests = len([r for r in results if r["status"] == "success"])
-        logger.info(f"Bulk ping test completed: {successful_tests}/{len(host_list)} successful")
+        logger.info(f"Bulk HTTP ping test completed: {successful_tests}/{len(host_list)} successful")
         
         return {
             "results": results,
@@ -254,57 +324,33 @@ async def run_bulk_ping_test(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Bulk ping test failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Bulk ping test failed: {str(e)}")
+        logger.error(f"Bulk HTTP ping test failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Bulk HTTP ping test failed: {str(e)}")
 
 @router.get("/ping-test/connectivity")
 async def check_connectivity(host: str):
     """
-    Quick connectivity check using a single ping.
+    Quick connectivity check using HTTP request.
     """
     try:
-        logger.info(f"Checking connectivity to {host}")
+        logger.info(f"Checking HTTP connectivity to {host}")
         
-        # Resolve hostname
-        try:
-            target_ip = socket.gethostbyname(host)
-        except socket.gaierror:
-            return {
-                "host": host,
-                "reachable": False,
-                "error": "Failed to resolve hostname"
-            }
+        # Quick single test
+        result = await perform_http_ping_test(host, 1, timeout=3.0)
         
-        # Single ping test
-        try:
-            response_time = ping3.ping(target_ip, timeout=3.0)
-            
-            if response_time is not None:
-                ping_time_ms = round(response_time * 1000, 1)
-                return {
-                    "host": host,
-                    "target_ip": target_ip,
-                    "reachable": True,
-                    "response_time": ping_time_ms,
-                    "status": "online"
-                }
-            else:
-                return {
-                    "host": host,
-                    "target_ip": target_ip,
-                    "reachable": False,
-                    "status": "timeout"
-                }
-                
-        except Exception as e:
-            return {
-                "host": host,
-                "target_ip": target_ip,
-                "reachable": False,
-                "error": str(e),
-                "status": "error"
-            }
+        return {
+            "host": host,
+            "target_ip": result.target_ip,
+            "reachable": result.success,
+            "response_time": result.avg_time if result.success else None,
+            "status": "online" if result.success else "unreachable"
+        }
         
     except Exception as e:
         logger.error(f"Connectivity check failed for {host}: {e}")
-        raise HTTPException(status_code=500, detail=f"Connectivity check failed: {str(e)}") 
+        return {
+            "host": host,
+            "reachable": False,
+            "error": str(e),
+            "status": "error"
+        }
