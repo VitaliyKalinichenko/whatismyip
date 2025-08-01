@@ -28,11 +28,6 @@ export default function PingTestClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Get API URL from environment variable or use localhost
-  const getApiUrl = () => {
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-  };
-
   const runPingTest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!host.trim()) {
@@ -51,7 +46,8 @@ export default function PingTestClient() {
       setError("");
       setResults(null);
 
-      const apiUrl = `${getApiUrl()}/api/v1/ping-test`;
+      // Use relative URL - Next.js rewrites will proxy to backend
+      const apiUrl = '/api/v1/ping-test';
       console.log('Making ping request to:', apiUrl);
       console.log('Request payload:', { host: host.trim(), count: packetCount });
       
@@ -181,13 +177,15 @@ export default function PingTestClient() {
             {/* Debug info in development */}
             {process.env.NODE_ENV === 'development' && (
               <div className="text-xs text-muted-foreground bg-muted p-2 rounded">
-                API URL: {getApiUrl()}/api/v1/ping-test
+                API URL: /api/v1/ping-test (proxied to backend)
+                <br />
+                Backend: {process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}
               </div>
             )}
             
             {error && (
-              <div className="flex items-center space-x-2 text-red-600">
-                <AlertCircle className="h-4 w-4" />
+              <div className="flex items-center space-x-2 text-red-600 bg-red-50 dark:bg-red-950 p-3 rounded-lg border border-red-200 dark:border-red-800">
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
                 <p className="text-sm">{error}</p>
               </div>
             )}
