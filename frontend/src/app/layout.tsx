@@ -43,12 +43,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background font-sans antialiased" suppressHydrationWarning>
         <NextIntlClientProvider messages={defaultMessages} locale="en">
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+          <ThemeProvider>
             <SecurityInitializer />
             <div className="min-h-screen bg-background">
               <Header />
