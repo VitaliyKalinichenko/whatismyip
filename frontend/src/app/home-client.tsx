@@ -86,38 +86,106 @@ export default function HomePageClient() {
     const userAgent = navigator.userAgent;
     let browser = { name: "Unknown", version: "Unknown", os: "Unknown" };
 
-    // Detect browser
-    if (userAgent.includes("Chrome") && !userAgent.includes("Edg")) {
-      browser.name = "Chrome";
-      const match = userAgent.match(/Chrome\/([0-9.]+)/);
-      if (match) browser.version = match[1];
-    } else if (userAgent.includes("Firefox")) {
-      browser.name = "Firefox";
-      const match = userAgent.match(/Firefox\/([0-9.]+)/);
-      if (match) browser.version = match[1];
-    } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
-      browser.name = "Safari";
-      const match = userAgent.match(/Version\/([0-9.]+)/);
-      if (match) browser.version = match[1];
-    } else if (userAgent.includes("Edg")) {
-      browser.name = "Edge";
-      const match = userAgent.match(/Edg\/([0-9.]+)/);
-      if (match) browser.version = match[1];
-    }
+    console.log('🔍 User Agent:', userAgent); // Debug log
 
-    // Detect OS
-    if (userAgent.includes("Windows")) {
+    // Detect OS first (important for iOS detection)
+    if (userAgent.includes("iPhone") || userAgent.includes("iPad") || userAgent.includes("iPod")) {
+      browser.os = "iOS";
+    } else if (userAgent.includes("Android")) {
+      browser.os = "Android";
+    } else if (userAgent.includes("Windows")) {
       browser.os = "Windows";
     } else if (userAgent.includes("Mac")) {
       browser.os = "macOS";
     } else if (userAgent.includes("Linux")) {
       browser.os = "Linux";
-    } else if (userAgent.includes("Android")) {
-      browser.os = "Android";
-    } else if (userAgent.includes("iOS")) {
-      browser.os = "iOS";
     }
 
+    // iOS browsers detection (all use WebKit but have different identifiers)
+    if (browser.os === "iOS") {
+      if (userAgent.includes("CriOS/")) {
+        // Chrome on iOS
+        browser.name = "Chrome";
+        const match = userAgent.match(/CriOS\/([0-9.]+)/);
+        if (match) browser.version = match[1];
+      } else if (userAgent.includes("EdgiOS/")) {
+        // Edge on iOS  
+        browser.name = "Edge";
+        const match = userAgent.match(/EdgiOS\/([0-9.]+)/);
+        if (match) browser.version = match[1];
+      } else if (userAgent.includes("FxiOS/")) {
+        // Firefox on iOS
+        browser.name = "Firefox";
+        const match = userAgent.match(/FxiOS\/([0-9.]+)/);
+        if (match) browser.version = match[1];
+      } else if (userAgent.includes("OPiOS/")) {
+        // Opera on iOS
+        browser.name = "Opera";
+        const match = userAgent.match(/OPiOS\/([0-9.]+)/);
+        if (match) browser.version = match[1];
+      } else if (userAgent.includes("DuckDuckGo/")) {
+        // DuckDuckGo on iOS
+        browser.name = "DuckDuckGo";
+        const match = userAgent.match(/DuckDuckGo\/([0-9.]+)/);
+        if (match) browser.version = match[1];
+      } else if (userAgent.includes("Safari/") && userAgent.includes("Version/")) {
+        // Safari on iOS (default)
+        browser.name = "Safari";
+        const match = userAgent.match(/Version\/([0-9.]+)/);
+        if (match) browser.version = match[1];
+      } else {
+        // Fallback for unknown iOS browser
+        browser.name = "Unknown iOS Browser";
+      }
+    } 
+    // Android browsers detection
+    else if (browser.os === "Android") {
+      if (userAgent.includes("Chrome/") && !userAgent.includes("Edg")) {
+        browser.name = "Chrome";
+        const match = userAgent.match(/Chrome\/([0-9.]+)/);
+        if (match) browser.version = match[1];
+      } else if (userAgent.includes("EdgA/")) {
+        // Edge on Android
+        browser.name = "Edge";
+        const match = userAgent.match(/EdgA\/([0-9.]+)/);
+        if (match) browser.version = match[1];
+      } else if (userAgent.includes("Firefox/")) {
+        browser.name = "Firefox";
+        const match = userAgent.match(/Firefox\/([0-9.]+)/);
+        if (match) browser.version = match[1];
+      } else if (userAgent.includes("SamsungBrowser/")) {
+        browser.name = "Samsung Internet";
+        const match = userAgent.match(/SamsungBrowser\/([0-9.]+)/);
+        if (match) browser.version = match[1];
+      }
+    }
+    // Desktop browsers detection
+    else {
+      if (userAgent.includes("Edg/")) {
+        // Edge (Chromium-based)
+        browser.name = "Edge";
+        const match = userAgent.match(/Edg\/([0-9.]+)/);
+        if (match) browser.version = match[1];
+      } else if (userAgent.includes("Chrome/") && !userAgent.includes("Edg")) {
+        browser.name = "Chrome";
+        const match = userAgent.match(/Chrome\/([0-9.]+)/);
+        if (match) browser.version = match[1];
+      } else if (userAgent.includes("Firefox/")) {
+        browser.name = "Firefox";
+        const match = userAgent.match(/Firefox\/([0-9.]+)/);
+        if (match) browser.version = match[1];
+      } else if (userAgent.includes("Safari/") && !userAgent.includes("Chrome") && userAgent.includes("Version/")) {
+        browser.name = "Safari";
+        const match = userAgent.match(/Version\/([0-9.]+)/);
+        if (match) browser.version = match[1];
+      } else if (userAgent.includes("OPR/") || userAgent.includes("Opera/")) {
+        browser.name = "Opera";
+        const match = userAgent.match(/(?:OPR|Opera)\/([0-9.]+)/);
+        if (match) browser.version = match[1];
+      }
+    }
+
+    console.log('🔍 Detected browser:', browser); // Debug log
     setBrowserInfo(browser);
   };
 
@@ -328,8 +396,6 @@ export default function HomePageClient() {
     });
   };
 
-
-
   const detectLocalIP = async () => {
     try {
       setLocalIP({ ip: 'Detecting...', detected: false });
@@ -438,6 +504,7 @@ export default function HomePageClient() {
     setLoadingProgress(0);
     fetchIPInfo();
     detectLocalIP();
+    detectBrowser(); // Re-detect browser on refresh
   };
 
   const tools = [
@@ -477,7 +544,8 @@ export default function HomePageClient() {
     ipInfo, 
     refreshing, 
     loadingProgress,
-    hasFetchedData: hasFetchedData.current 
+    hasFetchedData: hasFetchedData.current,
+    browserInfo
   });
 
   if (loading) {
@@ -552,8 +620,6 @@ export default function HomePageClient() {
                 </div>
               </div>
               
-
-
               {/* Location Info Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="flex items-center space-x-3 p-4 rounded-lg bg-muted">
@@ -686,4 +752,4 @@ export default function HomePageClient() {
       </div>
     </>
   );
-} 
+}
