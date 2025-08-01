@@ -10,6 +10,7 @@ import { Wifi, Loader2, CheckCircle, XCircle, AlertCircle, Activity } from "luci
 
 interface PingResult {
   host: string;
+  target_ip?: string;
   packets_sent: number;
   packets_received: number;
   packet_loss: number;
@@ -27,6 +28,11 @@ export default function PingTestClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Get API URL from environment variable or use localhost
+  const getApiUrl = () => {
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  };
+
   const runPingTest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!host.trim()) {
@@ -35,8 +41,8 @@ export default function PingTestClient() {
     }
 
     const packetCount = parseInt(count) || 4;
-    if (packetCount < 1 || packetCount > 10) {
-      setError("Number of packets must be between 1 and 10");
+    if (packetCount < 1 || packetCount > 20) {
+      setError("Number of packets must be between 1 and 20");
       return;
     }
 
@@ -45,10 +51,11 @@ export default function PingTestClient() {
       setError("");
       setResults(null);
 
-      console.log('Making ping request to: /api/v1/ping-test');
+      const apiUrl = `${getApiUrl()}/api/v1/ping-test`;
+      console.log('Making ping request to:', apiUrl);
       console.log('Request payload:', { host: host.trim(), count: packetCount });
       
-      const response = await fetch('/api/v1/ping-test', {
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,27 +66,45 @@ export default function PingTestClient() {
         }),
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`Ping test failed: ${response.status} - ${errorText}`);
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
+        
+        // Try to parse error as JSON for better error messages
+        try {
+          const errorData = JSON.parse(errorText);
+          throw new Error(errorData.detail || errorText);
+        } catch {
+          throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
       }
 
       const data = await response.json();
       console.log('Ping test response:', data);
       
+      // Validate response structure
       if (!data || typeof data.success !== 'boolean') {
+        console.error("Invalid response structure:", data);
         throw new Error("Invalid response from server");
       }
       
       setResults(data);
     } catch (err) {
       console.error("Ping test error:", err);
-      setError(
-        err instanceof Error 
-          ? err.message 
-          : "Failed to run ping test. Please check the hostname/IP and try again."
-      );
+      
+      // Better error handling
+      if (err instanceof TypeError && err.message.includes('Failed to fetch')) {
+        setError("Cannot connect to server. Please check if the backend is running.");
+      } else {
+        setError(
+          err instanceof Error 
+            ? err.message 
+            : "Failed to run ping test. Please check the hostname/IP and try again."
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -144,7 +169,7 @@ export default function PingTestClient() {
                   id="count-input"
                   type="number"
                   min="1"
-                  max="10"
+                  max="20"
                   placeholder="4"
                   value={count}
                   onChange={handleCountChange}
@@ -152,6 +177,14 @@ export default function PingTestClient() {
                 />
               </div>
             </div>
+            
+            {/* Debug info in development */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="text-xs text-muted-foreground bg-muted p-2 rounded">
+                API URL: {getApiUrl()}/api/v1/ping-test
+              </div>
+            )}
+            
             {error && (
               <div className="flex items-center space-x-2 text-red-600">
                 <AlertCircle className="h-4 w-4" />
@@ -187,6 +220,9 @@ export default function PingTestClient() {
                   <XCircle className="h-5 w-5 text-red-600" />
                 )}
                 <span>Ping Results for {results.host}</span>
+                {results.target_ip && results.target_ip !== results.host && (
+                  <span className="text-sm text-muted-foreground">({results.target_ip})</span>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -216,27 +252,29 @@ export default function PingTestClient() {
           </Card>
 
           {/* Detailed Stats */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Latency Statistics</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <span className="font-medium">Minimum</span>
-                  <Badge variant="outline">{results.min_time.toFixed(1)}ms</Badge>
+          {results.packets_received > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Latency Statistics</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <span className="font-medium">Minimum</span>
+                    <Badge variant="outline">{results.min_time.toFixed(1)}ms</Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <span className="font-medium">Maximum</span>
+                    <Badge variant="outline">{results.max_time.toFixed(1)}ms</Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <span className="font-medium">Average</span>
+                    <Badge variant="outline">{results.avg_time.toFixed(1)}ms</Badge>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <span className="font-medium">Maximum</span>
-                  <Badge variant="outline">{results.max_time.toFixed(1)}ms</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <span className="font-medium">Average</span>
-                  <Badge variant="outline">{results.avg_time.toFixed(1)}ms</Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Individual Ping Results */}
           {results.timestamps && results.timestamps.length > 0 && (
@@ -249,10 +287,18 @@ export default function PingTestClient() {
                   {results.timestamps.map((time, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-2 border rounded"
+                      className={`flex items-center justify-between p-2 border rounded ${
+                        time === 'timeout' || time === 'error' 
+                          ? 'bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800' 
+                          : 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800'
+                      }`}
                     >
                       <span>Packet {index + 1}</span>
-                      <span className="font-mono">{time}</span>
+                      <span className={`font-mono ${
+                        time === 'timeout' || time === 'error' ? 'text-red-600' : 'text-green-600'
+                      }`}>
+                        {time}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -263,4 +309,4 @@ export default function PingTestClient() {
       )}
     </>
   );
-} 
+}
