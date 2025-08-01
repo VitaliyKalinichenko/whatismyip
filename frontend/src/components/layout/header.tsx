@@ -122,7 +122,3 @@ export function Header() {
     </header>
   );
 }
-    </header>
-  );
-}
-
