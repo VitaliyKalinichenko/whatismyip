@@ -20,7 +20,7 @@ import {
 import { useState, useEffect } from "react";
 
 export function Header() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const t = useTranslations('navigation');
@@ -41,6 +41,9 @@ export function Header() {
   if (!mounted) {
     return null;
   }
+
+  // Use resolvedTheme to get the actual applied theme
+  const isDark = resolvedTheme === "dark";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -72,12 +75,13 @@ export function Header() {
             
             {/* Theme Toggle */}
             <div className="flex items-center space-x-2">
-              <Sun className="h-4 w-4" />
+              <Moon className={`h-4 w-4 ${isDark ? "text-foreground" : "text-muted-foreground"}`} />
               <Switch
-                checked={theme === "dark"}
-                onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+                checked={!isDark}
+                onCheckedChange={(checked) => setTheme(checked ? "light" : "dark")}
+                aria-label="Toggle between dark and light mode"
               />
-              <Moon className="h-4 w-4" />
+              <Sun className={`h-4 w-4 ${!isDark ? "text-foreground" : "text-muted-foreground"}`} />
             </div>
 
             {/* Mobile Menu Button */}
@@ -115,6 +119,9 @@ export function Header() {
           </div>
         )}
       </div>
+    </header>
+  );
+}
     </header>
   );
 }
