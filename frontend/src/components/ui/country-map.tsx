@@ -12,19 +12,17 @@ interface CountryMapProps {
 // Function to get flag emoji from country code
 const getFlagEmoji = (countryCode: string): string => {
   if (!countryCode || countryCode.length !== 2) return '🌍';
-  
   const codePoints = countryCode
     .toUpperCase()
     .split('')
     .map(char => 127397 + char.charCodeAt(0));
-  
   return String.fromCodePoint(...codePoints);
 };
 
 export function CountryMap({ countryCode, className = '', size = 'md' }: CountryMapProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
-  
+
   // Reset states when country code changes
   useEffect(() => {
     setImageLoaded(false);
@@ -38,19 +36,12 @@ export function CountryMap({ countryCode, className = '', size = 'md' }: Country
     lg: 'w-16 h-16'
   };
 
-  // Multiple CDN sources for country outline/map images  
+  // Local static sources for country icons
   const flagEmoji = getFlagEmoji(countryCode);
   const imageSources = [
-    // Primary source: Country outline silhouettes from a reliable source
-    `https://raw.githubusercontent.com/djaiss/mapsicon/master/all/${countryCode.toLowerCase()}/vector.svg`,
-    // Fallback 1: Alternative map outline service
-    `https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.11.0/flags/1x1/${countryCode.toLowerCase()}.svg`,
-    // Fallback 2: High-quality flag service
-    `https://flagcdn.com/w160/${countryCode.toLowerCase()}.png`,
-    // Fallback 3: Another flag service
-    `https://cdn.jsdelivr.net/npm/country-flag-icons@1.5.7/3x2/${countryCode.toUpperCase()}.svg`,
-    // Fallback 4: Emoji flag fallback
-    `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50%" x="50%" dominant-baseline="middle" text-anchor="middle" font-size="60">${flagEmoji}</text></svg>`,
+    `/mapsicon/all/${countryCode.toLowerCase()}/vector.svg`,
+    `/mapsicon/all/${countryCode.toLowerCase()}/vector.png`,
+    `data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><text y=\"50%\" x=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" font-size=\"60\">${flagEmoji}</text></svg>`
   ];
 
   const [currentSourceIndex, setCurrentSourceIndex] = useState(0);
@@ -61,11 +52,9 @@ export function CountryMap({ countryCode, className = '', size = 'md' }: Country
   };
 
   const handleImageError = () => {
-    // Try next source if available
     if (currentSourceIndex < imageSources.length - 1) {
       setCurrentSourceIndex(currentSourceIndex + 1);
     } else {
-      // All sources failed
       setImageFailed(true);
       setImageLoaded(false);
     }
@@ -93,7 +82,6 @@ export function CountryMap({ countryCode, className = '', size = 'md' }: Country
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
         </div>
       )}
-      
       {/* Country image */}
       <img
         src={imageSources[currentSourceIndex]}
@@ -105,7 +93,6 @@ export function CountryMap({ countryCode, className = '', size = 'md' }: Country
         onError={handleImageError}
         loading="lazy"
       />
-      
       {/* Country code overlay for large size */}
       {size === 'lg' && imageLoaded && (
         <div className="absolute bottom-0 right-0 bg-black bg-opacity-75 text-white text-xs px-1 py-0.5 rounded-tl-md">
@@ -114,4 +101,4 @@ export function CountryMap({ countryCode, className = '', size = 'md' }: Country
       )}
     </div>
   );
-} 
+}
