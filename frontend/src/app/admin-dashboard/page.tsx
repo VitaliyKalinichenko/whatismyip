@@ -87,252 +87,251 @@ export default function AdminDashboard() {
   };
 
   // Authentication check
- useEffect(() => {
-  const token = localStorage.getItem("admin_token");
-  const userData = localStorage.getItem("admin_user");
+  useEffect(() => {
+    const token = localStorage.getItem("admin_token");
+    const userData = localStorage.getItem("admin_user");
 
-  if (!token || !userData) {
-    router.push("/admin-login");
-    return;
-  }
+    if (!token || !userData) {
+      router.push("/admin-login");
+      return;
+    }
 
-  try {
-    const parsedUser = JSON.parse(userData);
-    setUser(parsedUser);
-    loadPostsFromSupabase();  // <-- Завжди вантажимо пости тут
-  } catch (error) {
-    console.error("Invalid user data:", error);
-    handleLogout();
-  }
-}, []);
-
-
-/*
-  const verifyToken = async (token: string) => {
     try {
-      const response = await fetch("/api/v1/admin/auth/verify-token", {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error("Token verification failed");
-      }
-      
-      await loadDashboardData();
+      const parsedUser = JSON.parse(userData);
+      setUser(parsedUser);
+      loadPostsFromSupabase();
+      loadAnalytics();
     } catch (error) {
-      console.error("Token verification failed:", error);
+      console.error("Invalid user data:", error);
       handleLogout();
     }
-  };
+  }, []);
 
-  const loadDashboardData = async () => {
+  const loadAnalytics = async () => {
     try {
-      const token = localStorage.getItem("admin_token");
-      const headers = {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      };
+      const { data: allPosts, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-      // Load posts
-      const postsResponse = await fetch("/api/v1/admin/blog/posts?per_page=50", {
-        headers
-      });
-      
-      if (postsResponse.ok) {
-        const postsData = await postsResponse.json();
-        setPosts(postsData.posts);
+      if (error) {
+        console.error('Failed to load analytics:', error);
+        return;
       }
 
-      // Load analytics
-      const analyticsResponse = await fetch("/api/v1/admin/blog/analytics", {
-        headers
-      });
-      
-      if (analyticsResponse.ok) {
-        const analyticsData = await analyticsResponse.json();
-        setAnalytics(analyticsData);
-      }
+      const totalPosts = allPosts.length;
+      const publishedPosts = allPosts.filter(post => post.status === 'published').length;
+      const draftPosts = allPosts.filter(post => post.status === 'draft').length;
+      const recentPosts = allPosts.slice(0, 5);
 
-      setLoading(false);
+      setAnalytics({
+        total_posts: totalPosts,
+        published_posts: publishedPosts,
+        draft_posts: draftPosts,
+        recent_posts: recentPosts
+      });
     } catch (error) {
-      console.error("Failed to load dashboard data:", error);
-      setLoading(false);
+      console.error('Error loading analytics:', error);
     }
-  }; */
+  };
 
   const handleCreatePost = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!formData.title || formData.title.length < 1 || formData.title.length > 200) {
-    alert("Title must be between 1 and 200 characters");
-    return;
-  }
+    if (!formData.title || formData.title.length < 1 || formData.title.length > 200) {
+      alert("Title must be between 1 and 200 characters");
+      return;
+    }
 
-  if (!formData.excerpt || formData.excerpt.length < 10 || formData.excerpt.length > 500) {
-    alert("Excerpt must be between 10 and 500 characters");
-    return;
-  }
+    if (!formData.excerpt || formData.excerpt.length < 10 || formData.excerpt.length > 500) {
+      alert("Excerpt must be between 10 and 500 characters");
+      return;
+    }
 
-  if (!formData.content || formData.content.length < 50) {
-    alert("Content must be at least 50 characters");
-    return;
-  }
+    if (!formData.content || formData.content.length < 50) {
+      alert("Content must be at least 50 characters");
+      return;
+    }
 
-  if ((formData.tags || []).length > 10) {
-    alert("Maximum 10 tags allowed");
-    return;
-  }
+    if ((formData.tags || []).length > 10) {
+      alert("Maximum 10 tags allowed");
+      return;
+    }
 
-  const slug = formData.title
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9\-]/g, '');
+    const slug = formData.title
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9\-]/g, '');
 
-  const postData = {
-    ...formData,
-    slug,
-    author: user?.full_name || 'Admin',
-    published_at: formData.status === 'published' ? new Date().toISOString() : null
+    const postData = {
+      ...formData,
+      slug,
+      author: user?.full_name || 'Admin',
+      published_at: formData.status === 'published' ? new Date().toISOString() : null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    const { error } = await supabase
+      .from('posts')
+      .insert([postData]);
+
+    if (error) {
+      console.error('Failed to create post:', error);
+      alert(`Failed to create post: ${error.message}`);
+      return;
+    }
+
+    alert('Post created successfully!');
+    setCurrentView("posts");
+    resetForm();
+    await loadPostsFromSupabase();
+    await loadAnalytics();
   };
 
-  const { error } = await supabase
-    .from('posts')
-    .insert([postData]);
+  const loadPostsFromSupabase = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-  if (error) {
-    console.error('Failed to publish post:', error);
-    alert(`Failed to publish post: ${error.message}`);
-    return;
-  }
+      if (error) {
+        console.error('Failed to load posts:', error);
+        setLoading(false);
+        return;
+      }
 
-  alert('Post published successfully!');
-  setCurrentView("posts");
-  resetForm();
-  await loadPostsFromSupabase();  // Додамо нижче
-};
+      setPosts(data || []);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error loading posts:', error);
+      setLoading(false);
+    }
+  };
 
-const loadPostsFromSupabase = async () => {
-  const { data, error } = await supabase
-    .from('posts')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const handleUpdatePost = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPost) return;
 
-  if (error) {
-    console.error('Failed to load posts:', error);
-    setLoading(false);  // <-- ДОДАЄМО навіть при помилці
-    return;
-  }
+    // Валідація, як у CreatePost
+    if (!formData.title || formData.title.length < 1 || formData.title.length > 200) {
+      alert("Title must be between 1 and 200 characters");
+      return;
+    }
 
-  setPosts(data);
-  setLoading(false);  // <-- ВАЖЛИВО!
-};
+    if (!formData.excerpt || formData.excerpt.length < 10 || formData.excerpt.length > 500) {
+      alert("Excerpt must be between 10 and 500 characters");
+      return;
+    }
 
+    if (!formData.content || formData.content.length < 50) {
+      alert("Content must be at least 50 characters");
+      return;
+    }
 
+    if ((formData.tags || []).length > 10) {
+      alert("Maximum 10 tags allowed");
+      return;
+    }
 
-const handleUpdatePost = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!editingPost) return;
-
-  // Валідація, як у CreatePost
-  if (!formData.title || formData.title.length < 1 || formData.title.length > 200) {
-    alert("Title must be between 1 and 200 characters");
-    return;
-  }
-
-  if (!formData.excerpt || formData.excerpt.length < 10 || formData.excerpt.length > 500) {
-    alert("Excerpt must be between 10 and 500 characters");
-    return;
-  }
-
-  if (!formData.content || formData.content.length < 50) {
-    alert("Content must be at least 50 characters");
-    return;
-  }
-
-  if ((formData.tags || []).length > 10) {
-    alert("Maximum 10 tags allowed");
-    return;
-  }
-
-  const { error } = await supabase
-    .from('posts')
-    .update({
+    const updateData = {
       ...formData,
-      updated_at: new Date().toISOString()
-    })
-    .eq('id', editingPost.id);
+      updated_at: new Date().toISOString(),
+      published_at: formData.status === 'published' 
+        ? (editingPost.published_at || new Date().toISOString())
+        : null
+    };
 
-  if (error) {
-    console.error('Failed to update post:', error);
-    alert(`Failed to update post: ${error.message}`);
-    return;
-  }
+    const { error } = await supabase
+      .from('posts')
+      .update(updateData)
+      .eq('id', editingPost.id);
 
-  alert("Post updated successfully!");
-  setCurrentView("posts");
-  setEditingPost(null);
-  resetForm();
-  await loadPostsFromSupabase();
-};
+    if (error) {
+      console.error('Failed to update post:', error);
+      alert(`Failed to update post: ${error.message}`);
+      return;
+    }
 
-const handleDeletePost = async (postId: string) => {
-  if (!confirm("Are you sure you want to delete this post?")) return;
+    alert("Post updated successfully!");
+    setCurrentView("posts");
+    setEditingPost(null);
+    resetForm();
+    await loadPostsFromSupabase();
+    await loadAnalytics();
+  };
 
-  const { error } = await supabase
-    .from('posts')
-    .delete()
-    .eq('id', postId);
+  const handleDeletePost = async (postId: string) => {
+    if (!confirm("Are you sure you want to delete this post?")) return;
 
-  if (error) {
-    console.error('Failed to delete post:', error);
-    alert(`Failed to delete post: ${error.message}`);
-    return;
-  }
+    const { error } = await supabase
+      .from('posts')
+      .delete()
+      .eq('id', postId);
 
-  alert("Post deleted successfully!");
-  await loadPostsFromSupabase();
-};
+    if (error) {
+      console.error('Failed to delete post:', error);
+      alert(`Failed to delete post: ${error.message}`);
+      return;
+    }
 
+    alert("Post deleted successfully!");
+    await loadPostsFromSupabase();
+    await loadAnalytics();
+  };
 
-const handlePublishPost = async (postId: string) => {
-  const { error } = await supabase
-    .from('posts')
-    .update({
-      status: 'published',
-      published_at: new Date().toISOString()
-    })
-    .eq('id', postId);
+  const handlePublishPost = async (postId: string) => {
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .update({
+          status: 'published',
+          published_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', postId);
 
-  if (error) {
-    console.error('Failed to publish post:', error);
-    alert(`Failed to publish post: ${error.message}`);
-    return;
-  }
+      if (error) {
+        console.error('Failed to publish post:', error);
+        alert(`Failed to publish post: ${error.message}`);
+        return;
+      }
 
-  alert("Post published successfully!");
-  await loadPostsFromSupabase();
-};
+      alert("Post published successfully!");
+      await loadPostsFromSupabase();
+      await loadAnalytics();
+    } catch (error) {
+      console.error('Error publishing post:', error);
+      alert("An error occurred while publishing the post");
+    }
+  };
 
-const handleUnpublishPost = async (postId: string) => {
-  const { error } = await supabase
-    .from('posts')
-    .update({
-      status: 'draft',
-      published_at: null
-    })
-    .eq('id', postId);
+  const handleUnpublishPost = async (postId: string) => {
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .update({
+          status: 'draft',
+          published_at: null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', postId);
 
-  if (error) {
-    console.error('Failed to unpublish post:', error);
-    alert(`Failed to unpublish post: ${error.message}`);
-    return;
-  }
+      if (error) {
+        console.error('Failed to unpublish post:', error);
+        alert(`Failed to unpublish post: ${error.message}`);
+        return;
+      }
 
-  alert("Post unpublished successfully!");
-  await loadPostsFromSupabase();
-};
+      alert("Post unpublished successfully!");
+      await loadPostsFromSupabase();
+      await loadAnalytics();
+    } catch (error) {
+      console.error('Error unpublishing post:', error);
+      alert("An error occurred while unpublishing the post");
+    }
+  };
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -650,6 +649,7 @@ const handleUnpublishPost = async (postId: string) => {
                             size="sm"
                             onClick={() => handleUnpublishPost(post.id)}
                             className="text-yellow-600 hover:text-yellow-700"
+                            title="Unpublish post"
                           >
                             <EyeOff className="h-4 w-4" />
                           </Button>
@@ -659,6 +659,7 @@ const handleUnpublishPost = async (postId: string) => {
                             size="sm"
                             onClick={() => handlePublishPost(post.id)}
                             className="text-green-600 hover:text-green-700"
+                            title="Publish post"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -828,6 +829,8 @@ const handleUnpublishPost = async (postId: string) => {
             </form>
           </div>
         )}
+
+     
 
         {/* Settings View */}
         {currentView === "settings" && (
