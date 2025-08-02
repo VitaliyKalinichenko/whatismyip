@@ -81,7 +81,7 @@ export default function AdminDashboard() {
   });
 
   // Authentication check
-  useEffect(() => {
+ useEffect(() => {
   const token = localStorage.getItem("admin_token");
   const userData = localStorage.getItem("admin_user");
 
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
   try {
     const parsedUser = JSON.parse(userData);
     setUser(parsedUser);
-    loadPostsFromSupabase();  // <-- ЗАМІСТЬ verifyToken(token)
+    loadPostsFromSupabase();  // <-- Завжди вантажимо пости тут
   } catch (error) {
     console.error("Invalid user data:", error);
     handleLogout();
@@ -101,6 +101,7 @@ export default function AdminDashboard() {
 }, []);
 
 
+/*
   const verifyToken = async (token: string) => {
     try {
       const response = await fetch("/api/v1/admin/auth/verify-token", {
@@ -153,7 +154,7 @@ export default function AdminDashboard() {
       console.error("Failed to load dashboard data:", error);
       setLoading(false);
     }
-  };
+  }; */
 
   const handleCreatePost = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -214,11 +215,14 @@ const loadPostsFromSupabase = async () => {
 
   if (error) {
     console.error('Failed to load posts:', error);
+    setLoading(false);  // <-- ДОДАЄМО навіть при помилці
     return;
   }
 
   setPosts(data);
+  setLoading(false);  // <-- ВАЖЛИВО!
 };
+
 
 
 const handleUpdatePost = async (e: React.FormEvent) => {
