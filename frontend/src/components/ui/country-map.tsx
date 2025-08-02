@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Globe } from 'lucide-react';
 
 interface CountryMapProps {
@@ -22,18 +22,23 @@ const getFlagEmoji = (countryCode: string): string => {
 export function CountryMap({ countryCode, className = '', size = 'md' }: CountryMapProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
 
-  // Reset states when country code changes
+  // Reset failure and sync loaded state when source or country changes
   useEffect(() => {
-    setImageLoaded(false);
     setImageFailed(false);
-  }, [countryCode]);
+    if (imgRef.current?.complete && imgRef.current.naturalWidth > 0) {
+      setImageLoaded(true);
+    } else {
+      setImageLoaded(false);
+    }
+  }, [countryCode, imgRef.current?.src]);
 
-  // Adjusted size configurations for larger icons
+  // Size configurations
   const sizeClasses = {
-    sm: 'w-12 h-12',   // 48×48px
-    md: 'w-20 h-20',   // 80×80px
-    lg: 'w-28 h-28'    // 112×112px
+    sm: 'w-12 h-12',
+    md: 'w-20 h-20',
+    lg: 'w-28 h-28'
   };
 
   const flagEmoji = getFlagEmoji(countryCode);
@@ -72,12 +77,16 @@ export function CountryMap({ countryCode, className = '', size = 'md' }: Country
 
   return (
     <div className={`${sizeClasses[size]} ${className} relative overflow-hidden rounded-md border border-gray-200 shadow-sm bg-gradient-to-br from-blue-50 to-blue-100`}>
-      {!imageLoaded && !imageFailed && (
+      {/* Loading spinner overlay */}
+      {!imageLoaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
         </div>
       )}
+
+      {/* Country image with ref for cache detection */}
       <img
+        ref={imgRef}
         src={imageSources[currentSourceIndex]}
         alt={`${countryCode} country map`}
         className={`w-full h-full object-contain transition-opacity duration-200 p-1 ${
@@ -87,6 +96,8 @@ export function CountryMap({ countryCode, className = '', size = 'md' }: Country
         onError={handleImageError}
         loading="lazy"
       />
+
+      {/* Country code overlay for large size */}
       {size === 'lg' && imageLoaded && (
         <div className="absolute bottom-0 right-0 bg-black bg-opacity-75 text-white text-xs px-1 py-0.5 rounded-tl-md">{countryCode.toUpperCase()}</div>
       )}
