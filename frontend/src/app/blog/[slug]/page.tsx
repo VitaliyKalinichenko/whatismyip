@@ -35,7 +35,7 @@ interface BlogPostPageProps {
 async function getBlogPost(slug: string): Promise<BlogPost | null> {
   try {
     const baseUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://your-domain.com' 
+      ? 'https://whatismyip.world' 
       : 'http://localhost:8000';
     
     const response = await fetch(`${baseUrl}/api/v1/blog/posts/${slug}`, {
@@ -49,7 +49,8 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
       throw new Error('Failed to fetch blog post');
     }
 
-    return response.json();
+    const data = await response.json(); // <-- Виправлення: додано await
+    return data;
   } catch (error) {
     console.error('Error fetching blog post:', error);
     return null;
@@ -72,14 +73,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       openGraph: {
         title: 'Blog Post Not Found',
         description: 'The requested blog post could not be found.',
-              images: [
-        {
-          url: "/og-image.png",
-          width: 1200,
-          height: 630,
-          alt: "Blog Article - whatismyip.world",
-        },
-      ],
+        images: [
+          {
+            url: "/og-image.png",
+            width: 1200,
+            height: 630,
+            alt: "Blog Article - whatismyip.world",
+          },
+        ],
       },
       twitter: {
         card: 'summary_large_image',
@@ -106,14 +107,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       modifiedTime: post.updated_at,
       authors: [post.author],
       tags: post.tags,
-              images: [
-          {
-            url: "/og-image.png",
-            width: 1200,
-            height: 630,
-            alt: "Blog Post Not Found - whatismyip.world",
-          },
-        ],
+      images: [
+        {
+          url: "/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: "Blog Post - whatismyip.world",
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
@@ -248,4 +249,4 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </div>
     </div>
   );
-} 
+}
