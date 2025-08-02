@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { logger } from "@/lib/logger";
+import { supabase } from '@/lib/supabaseClient';
 import { 
   Plus, 
   Edit, 
@@ -81,23 +82,24 @@ export default function AdminDashboard() {
 
   // Authentication check
   useEffect(() => {
-    const token = localStorage.getItem("admin_token");
-    const userData = localStorage.getItem("admin_user");
-    
-    if (!token || !userData) {
-      router.push("/admin-login");
-      return;
-    }
-    
-    try {
-      const parsedUser = JSON.parse(userData);
-      setUser(parsedUser);
-      verifyToken(token);
-    } catch (error) {
-      console.error("Invalid user data:", error);
-      handleLogout();
-    }
-  }, []);
+  const token = localStorage.getItem("admin_token");
+  const userData = localStorage.getItem("admin_user");
+
+  if (!token || !userData) {
+    router.push("/admin-login");
+    return;
+  }
+
+  try {
+    const parsedUser = JSON.parse(userData);
+    setUser(parsedUser);
+    loadPostsFromSupabase();  // <-- ЗАМІСТЬ verifyToken(token)
+  } catch (error) {
+    console.error("Invalid user data:", error);
+    handleLogout();
+  }
+}, []);
+
 
   const verifyToken = async (token: string) => {
     try {
@@ -153,16 +155,9 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("admin_token");
-    localStorage.removeItem("admin_user");
-    router.push("/admin-login");
-  };
-
   const handleCreatePost = async (e: React.FormEvent) => {
   e.preventDefault();
 
-  // Frontend validation to match backend requirements
   if (!formData.title || formData.title.length < 1 || formData.title.length > 200) {
     alert("Title must be between 1 and 200 characters");
     return;
@@ -183,39 +178,54 @@ export default function AdminDashboard() {
     return;
   }
 
-  try {
-    const token = localStorage.getItem("admin_token");
-    const response = await fetch("/api/v1/admin/blog/posts", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(formData)
-    });
+  const slug = formData.title
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9\-]/g, '');
 
-    if (response.ok) {
-      await loadDashboardData();
-      setCurrentView("posts");
-      resetForm();
-      alert("Post created successfully!");
-    } else {
-      const error = await response.json().catch(() => ({ detail: "Unknown error occurred" }));
-      console.error("Create Post Error Detail:", error);  // <-- Додано для виводу detail помилки
-      alert(`Failed to create post: ${error.detail || "Unknown error"}`);
-    }
-  } catch (error) {
-    console.error("Failed to create post:", error);
-    alert("Failed to create post. Please try again.");
+  const postData = {
+    ...formData,
+    slug,
+    author: user?.full_name || 'Admin',
+    published_at: formData.status === 'published' ? new Date().toISOString() : null
+  };
+
+  const { error } = await supabase
+    .from('posts')
+    .insert([postData]);
+
+  if (error) {
+    console.error('Failed to publish post:', error);
+    alert(`Failed to publish post: ${error.message}`);
+    return;
   }
+
+  alert('Post published successfully!');
+  setCurrentView("posts");
+  resetForm();
+  await loadPostsFromSupabase();  // Додамо нижче
+};
+
+const loadPostsFromSupabase = async () => {
+  const { data, error } = await supabase
+    .from('posts')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Failed to load posts:', error);
+    return;
+  }
+
+  setPosts(data);
 };
 
 
-  const handleUpdatePost = async (e: React.FormEvent) => {
+const handleUpdatePost = async (e: React.FormEvent) => {
   e.preventDefault();
   if (!editingPost) return;
 
-  // Frontend validation to match backend requirements
+  // Валідація, як у CreatePost
   if (!formData.title || formData.title.length < 1 || formData.title.length > 200) {
     alert("Title must be between 1 and 200 characters");
     return;
@@ -236,108 +246,83 @@ export default function AdminDashboard() {
     return;
   }
 
-  try {
-    const token = localStorage.getItem("admin_token");
-    const response = await fetch(`/api/v1/admin/blog/posts/${editingPost.id}`, {
-      method: "PUT",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(formData)
-    });
+  const { error } = await supabase
+    .from('posts')
+    .update({
+      ...formData,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', editingPost.id);
 
-    if (response.ok) {
-      await loadDashboardData();
-      setCurrentView("posts");
-      setEditingPost(null);
-      resetForm();
-      alert("Post updated successfully!");
-    } else {
-      const error = await response.json().catch(() => ({ detail: "Unknown error occurred" }));
-      console.error("Update Post Error Detail:", error); // <-- Додано
-      alert(`Failed to update post: ${error.detail || "Unknown error"}`);
-    }
-  } catch (error) {
-    console.error("Failed to update post:", error);
-    alert("Failed to update post. Please try again.");
+  if (error) {
+    console.error('Failed to update post:', error);
+    alert(`Failed to update post: ${error.message}`);
+    return;
   }
+
+  alert("Post updated successfully!");
+  setCurrentView("posts");
+  setEditingPost(null);
+  resetForm();
+  await loadPostsFromSupabase();
 };
 
 const handleDeletePost = async (postId: string) => {
   if (!confirm("Are you sure you want to delete this post?")) return;
 
-  try {
-    const token = localStorage.getItem("admin_token");
-    const response = await fetch(`/api/v1/admin/blog/posts/${postId}`, {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
+  const { error } = await supabase
+    .from('posts')
+    .delete()
+    .eq('id', postId);
 
-    if (response.ok) {
-      await loadDashboardData();
-      alert("Post deleted successfully!");
-    } else {
-      const error = await response.json().catch(() => ({ detail: "Unknown error occurred" }));
-      console.error("Delete Post Error Detail:", error); // <-- Додано
-      alert(`Failed to delete post: ${error.detail || "Unknown error"}`);
-    }
-  } catch (error) {
-    console.error("Failed to delete post:", error);
-    alert("Failed to delete post. Please try again.");
+  if (error) {
+    console.error('Failed to delete post:', error);
+    alert(`Failed to delete post: ${error.message}`);
+    return;
   }
+
+  alert("Post deleted successfully!");
+  await loadPostsFromSupabase();
 };
 
-const handlePublishPost = async (postId: string) => {
-  try {
-    const token = localStorage.getItem("admin_token");
-    const response = await fetch(`/api/v1/admin/blog/posts/${postId}/publish`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
 
-    if (response.ok) {
-      await loadDashboardData();
-      alert("Post published successfully!");
-    } else {
-      const error = await response.json().catch(() => ({ detail: "Unknown error occurred" }));
-      console.error("Publish Post Error Detail:", error); // <-- Додано
-      alert(`Failed to publish post: ${error.detail || "Unknown error"}`);
-    }
-  } catch (error) {
-    console.error("Failed to publish post:", error);
-    alert("Failed to publish post. Please try again.");
+const handlePublishPost = async (postId: string) => {
+  const { error } = await supabase
+    .from('posts')
+    .update({
+      status: 'published',
+      published_at: new Date().toISOString()
+    })
+    .eq('id', postId);
+
+  if (error) {
+    console.error('Failed to publish post:', error);
+    alert(`Failed to publish post: ${error.message}`);
+    return;
   }
+
+  alert("Post published successfully!");
+  await loadPostsFromSupabase();
 };
 
 const handleUnpublishPost = async (postId: string) => {
-  try {
-    const token = localStorage.getItem("admin_token");
-    const response = await fetch(`/api/v1/admin/blog/posts/${postId}/unpublish`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
+  const { error } = await supabase
+    .from('posts')
+    .update({
+      status: 'draft',
+      published_at: null
+    })
+    .eq('id', postId);
 
-    if (response.ok) {
-      await loadDashboardData();
-      alert("Post unpublished successfully!");
-    } else {
-      const error = await response.json().catch(() => ({ detail: "Unknown error occurred" }));
-      console.error("Unpublish Post Error Detail:", error); // <-- Додано
-      alert(`Failed to unpublish post: ${error.detail || "Unknown error"}`);
-    }
-  } catch (error) {
-    console.error("Failed to unpublish post:", error);
-    alert("Failed to unpublish post. Please try again.");
+  if (error) {
+    console.error('Failed to unpublish post:', error);
+    alert(`Failed to unpublish post: ${error.message}`);
+    return;
   }
-};
 
+  alert("Post unpublished successfully!");
+  await loadPostsFromSupabase();
+};
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
