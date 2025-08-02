@@ -37,7 +37,7 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
     const baseUrl = process.env.NODE_ENV === 'production' 
       ? 'https://whatismyip.world' 
       : 'http://localhost:8000';
-    
+
     const response = await fetch(`${baseUrl}/api/v1/blog/posts/${slug}`, {
       next: { revalidate: 60 }
     });
@@ -57,9 +57,11 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
   }
 }
 
-// Generate metadata for SEO
+// Generate metadata for SEO & OpenGraph
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const post = await getBlogPost(params.slug);
+
+  const fallbackImage = "/og-image.png";
 
   if (!post) {
     return {
@@ -75,7 +77,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
         description: 'The requested blog post could not be found.',
         images: [
           {
-            url: "/og-image.png",
+            url: fallbackImage,
             width: 1200,
             height: 630,
             alt: "Blog Article - whatismyip.world",
@@ -86,10 +88,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
         card: 'summary_large_image',
         title: 'Blog Post Not Found',
         description: 'The requested blog post could not be found.',
-        images: ["/og-image.png"],
+        images: [fallbackImage],
       },
     };
   }
+
+  const ogImage = post.featured_image && post.featured_image.trim() !== ''
+    ? post.featured_image
+    : fallbackImage;
 
   return {
     title: post.seo_title || post.title,
@@ -106,13 +112,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       publishedTime: post.published_at || post.created_at,
       modifiedTime: post.updated_at,
       authors: [post.author],
-      tags: post.tags || [], // Safe fallback
+      tags: post.tags || [],
       images: [
         {
-          url: "/og-image.png",
+          url: ogImage,
           width: 1200,
           height: 630,
-          alt: "Blog Post - whatismyip.world",
+          alt: post.title,
         },
       ],
     },
@@ -120,7 +126,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       card: 'summary_large_image',
       title: post.seo_title || post.title,
       description: post.seo_description || post.excerpt,
-      images: ["/og-image.png"],
+      images: [ogImage],
     },
   };
 }
