@@ -39,7 +39,7 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
       : 'http://localhost:8000';
     
     const response = await fetch(`${baseUrl}/api/v1/blog/posts/${slug}`, {
-      next: { revalidate: 60 } // Revalidate every minute
+      next: { revalidate: 60 }
     });
 
     if (!response.ok) {
@@ -49,7 +49,7 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
       throw new Error('Failed to fetch blog post');
     }
 
-    const data = await response.json(); // <-- Виправлення: додано await
+    const data = await response.json();
     return data;
   } catch (error) {
     console.error('Error fetching blog post:', error);
@@ -60,7 +60,7 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
 // Generate metadata for SEO
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const post = await getBlogPost(params.slug);
-  
+
   if (!post) {
     return {
       title: 'Blog Post Not Found',
@@ -106,7 +106,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       publishedTime: post.published_at || post.created_at,
       modifiedTime: post.updated_at,
       authors: [post.author],
-      tags: post.tags,
+      tags: post.tags || [], // Safe fallback
       images: [
         {
           url: "/og-image.png",
@@ -146,10 +146,11 @@ const calculateReadingTime = (content: string) => {
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const post = await getBlogPost(params.slug);
 
-  if (!post) {
+  if (!post || !post.content) {
     notFound();
   }
 
+  const sanitizedContent = sanitizeHtml(post.content || '');
   const readingTime = calculateReadingTime(post.content);
 
   return (
@@ -192,7 +193,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 </div>
 
                 {/* Tags */}
-                {post.tags.length > 0 && (
+                {post.tags && post.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {post.tags.map((tag) => (
                       <Badge key={tag} variant="secondary" className="text-xs">
@@ -204,15 +205,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 )}
 
                 {/* Excerpt */}
-                <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {post.excerpt}
-                </p>
+                {post.excerpt && (
+                  <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {post.excerpt}
+                  </p>
+                )}
               </div>
             </CardHeader>
 
             <CardContent>
               {/* Featured Image */}
-              {post.featured_image && (
+              {post.featured_image && post.featured_image.trim() !== '' && (
                 <div className="mb-8">
                   <img
                     src={post.featured_image}
@@ -225,14 +228,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               {/* Content */}
               <div className="prose prose-lg max-w-full dark:prose-invert prose-headings:font-semibold prose-p:leading-7 prose-li:leading-6 prose-img:max-w-full prose-img:h-auto prose-pre:overflow-x-auto prose-pre:max-w-full prose-table:max-w-full prose-table:overflow-x-auto blog-content">
                 <div 
-                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
+                  dangerouslySetInnerHTML={{ __html: sanitizedContent }}
                   className="break-words overflow-wrap-anywhere"
                 />
               </div>
 
               {/* Share Actions */}
               <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-                <ShareButton title={post.title} excerpt={post.excerpt} />
+                <ShareButton title={post.title} excerpt={post.excerpt || ''} />
               </div>
             </CardContent>
           </Card>
@@ -250,3 +253,4 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     </div>
   );
 }
+
