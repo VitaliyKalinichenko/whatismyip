@@ -282,56 +282,73 @@ export default function AdminDashboard() {
   };
 
   const handlePublishPost = async (postId: string) => {
-    try {
-      const { error } = await supabase
-        .from('posts')
-        .update({
-          status: 'published',
-          published_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', postId);
+  try {
+    const { error } = await supabase
+      .from('posts')
+      .update({
+        status: 'published',
+        published_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', postId);
 
-      if (error) {
-        console.error('Failed to publish post:', error);
-        alert(`Failed to publish post: ${error.message}`);
-        return;
-      }
-
-      alert("Post published successfully!");
-      await loadPostsFromSupabase();
-      await loadAnalytics();
-    } catch (error) {
-      console.error('Error publishing post:', error);
-      alert("An error occurred while publishing the post");
+    if (error) {
+      console.error('Failed to publish post:', error);
+      alert(`Failed to publish post: ${error.message}`);
+      return;
     }
-  };
 
-  const handleUnpublishPost = async (postId: string) => {
-    try {
-      const { error } = await supabase
-        .from('posts')
-        .update({
-          status: 'draft',
-          published_at: null,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', postId);
+    // 🟢 ОНОВЛЮЄМО ПОСТ ЛОКАЛЬНО В STATE
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId
+          ? { ...post, status: 'published', published_at: new Date().toISOString() }
+          : post
+      )
+    );
 
-      if (error) {
-        console.error('Failed to unpublish post:', error);
-        alert(`Failed to unpublish post: ${error.message}`);
-        return;
-      }
+    alert("Post published successfully!");
+    await loadAnalytics(); // Не вантажимо всі пости заново, тільки статистику
+  } catch (error) {
+    console.error('Error publishing post:', error);
+    alert("An error occurred while publishing the post");
+  }
+};
 
-      alert("Post unpublished successfully!");
-      await loadPostsFromSupabase();
-      await loadAnalytics();
-    } catch (error) {
-      console.error('Error unpublishing post:', error);
-      alert("An error occurred while unpublishing the post");
+const handleUnpublishPost = async (postId: string) => {
+  try {
+    const { error } = await supabase
+      .from('posts')
+      .update({
+        status: 'draft',
+        published_at: null,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', postId);
+
+    if (error) {
+      console.error('Failed to unpublish post:', error);
+      alert(`Failed to unpublish post: ${error.message}`);
+      return;
     }
-  };
+
+    // 🟢 ОНОВЛЮЄМО ПОСТ ЛОКАЛЬНО В STATE
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId
+          ? { ...post, status: 'draft', published_at: null }
+          : post
+      )
+    );
+
+    alert("Post unpublished successfully!");
+    await loadAnalytics(); // Не вантажимо всі пости заново, тільки статистику
+  } catch (error) {
+    console.error('Error unpublishing post:', error);
+    alert("An error occurred while unpublishing the post");
+  }
+};
+
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
