@@ -80,6 +80,12 @@ export default function AdminDashboard() {
     confirm_password: ""
   });
 
+  const handleLogout = () => {
+    localStorage.removeItem("admin_token");
+    localStorage.removeItem("admin_user");
+    router.push("/admin-login");
+  };
+
   // Authentication check
  useEffect(() => {
   const token = localStorage.getItem("admin_token");
