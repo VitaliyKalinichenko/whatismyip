@@ -160,177 +160,184 @@ export default function AdminDashboard() {
   };
 
   const handleCreatePost = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Frontend validation to match backend requirements
-    if (!formData.title || formData.title.length < 1 || formData.title.length > 200) {
-      alert("Title must be between 1 and 200 characters");
-      return;
-    }
-    
-    if (!formData.excerpt || formData.excerpt.length < 10 || formData.excerpt.length > 500) {
-      alert("Excerpt must be between 10 and 500 characters");
-      return;
-    }
-    
-    if (!formData.content || formData.content.length < 50) {
-      alert("Content must be at least 50 characters");
-      return;
-    }
-    
-    if ((formData.tags || []).length > 10) {
-      alert("Maximum 10 tags allowed");
-      return;
-    }
-    
-    try {
-      const token = localStorage.getItem("admin_token");
-      const response = await fetch("/api/v1/admin/blog/posts", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
+  e.preventDefault();
 
-      if (response.ok) {
-        await loadDashboardData();
-        setCurrentView("posts");
-        resetForm();
-        alert("Post created successfully!");
-      } else {
-        const error = await response.json().catch(() => ({ detail: "Unknown error occurred" }));
-        alert(`Failed to create post: ${error.detail || "Unknown error"}`);
-      }
-    } catch (error) {
-      console.error("Failed to create post:", error);
-      alert("Failed to create post. Please try again.");
+  // Frontend validation to match backend requirements
+  if (!formData.title || formData.title.length < 1 || formData.title.length > 200) {
+    alert("Title must be between 1 and 200 characters");
+    return;
+  }
+
+  if (!formData.excerpt || formData.excerpt.length < 10 || formData.excerpt.length > 500) {
+    alert("Excerpt must be between 10 and 500 characters");
+    return;
+  }
+
+  if (!formData.content || formData.content.length < 50) {
+    alert("Content must be at least 50 characters");
+    return;
+  }
+
+  if ((formData.tags || []).length > 10) {
+    alert("Maximum 10 tags allowed");
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem("admin_token");
+    const response = await fetch("/api/v1/admin/blog/posts", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (response.ok) {
+      await loadDashboardData();
+      setCurrentView("posts");
+      resetForm();
+      alert("Post created successfully!");
+    } else {
+      const error = await response.json().catch(() => ({ detail: "Unknown error occurred" }));
+      console.error("Create Post Error Detail:", error);  // <-- Додано для виводу detail помилки
+      alert(`Failed to create post: ${error.detail || "Unknown error"}`);
     }
-  };
+  } catch (error) {
+    console.error("Failed to create post:", error);
+    alert("Failed to create post. Please try again.");
+  }
+};
+
 
   const handleUpdatePost = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingPost) return;
+  e.preventDefault();
+  if (!editingPost) return;
 
-    // Frontend validation to match backend requirements
-    if (!formData.title || formData.title.length < 1 || formData.title.length > 200) {
-      alert("Title must be between 1 and 200 characters");
-      return;
-    }
-    
-    if (!formData.excerpt || formData.excerpt.length < 10 || formData.excerpt.length > 500) {
-      alert("Excerpt must be between 10 and 500 characters");
-      return;
-    }
-    
-    if (!formData.content || formData.content.length < 50) {
-      alert("Content must be at least 50 characters");
-      return;
-    }
-    
-    if ((formData.tags || []).length > 10) {
-      alert("Maximum 10 tags allowed");
-      return;
-    }
+  // Frontend validation to match backend requirements
+  if (!formData.title || formData.title.length < 1 || formData.title.length > 200) {
+    alert("Title must be between 1 and 200 characters");
+    return;
+  }
 
-    try {
-      const token = localStorage.getItem("admin_token");
-      const response = await fetch(`/api/v1/admin/blog/posts/${editingPost.id}`, {
-        method: "PUT",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
+  if (!formData.excerpt || formData.excerpt.length < 10 || formData.excerpt.length > 500) {
+    alert("Excerpt must be between 10 and 500 characters");
+    return;
+  }
 
-      if (response.ok) {
-        await loadDashboardData();
-        setCurrentView("posts");
-        setEditingPost(null);
-        resetForm();
-        alert("Post updated successfully!");
-      } else {
-        const error = await response.json().catch(() => ({ detail: "Unknown error occurred" }));
-        alert(`Failed to update post: ${error.detail || "Unknown error"}`);
+  if (!formData.content || formData.content.length < 50) {
+    alert("Content must be at least 50 characters");
+    return;
+  }
+
+  if ((formData.tags || []).length > 10) {
+    alert("Maximum 10 tags allowed");
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem("admin_token");
+    const response = await fetch(`/api/v1/admin/blog/posts/${editingPost.id}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (response.ok) {
+      await loadDashboardData();
+      setCurrentView("posts");
+      setEditingPost(null);
+      resetForm();
+      alert("Post updated successfully!");
+    } else {
+      const error = await response.json().catch(() => ({ detail: "Unknown error occurred" }));
+      console.error("Update Post Error Detail:", error); // <-- Додано
+      alert(`Failed to update post: ${error.detail || "Unknown error"}`);
+    }
+  } catch (error) {
+    console.error("Failed to update post:", error);
+    alert("Failed to update post. Please try again.");
+  }
+};
+
+const handleDeletePost = async (postId: string) => {
+  if (!confirm("Are you sure you want to delete this post?")) return;
+
+  try {
+    const token = localStorage.getItem("admin_token");
+    const response = await fetch(`/api/v1/admin/blog/posts/${postId}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
       }
-    } catch (error) {
-      console.error("Failed to update post:", error);
-      alert("Failed to update post. Please try again.");
+    });
+
+    if (response.ok) {
+      await loadDashboardData();
+      alert("Post deleted successfully!");
+    } else {
+      const error = await response.json().catch(() => ({ detail: "Unknown error occurred" }));
+      console.error("Delete Post Error Detail:", error); // <-- Додано
+      alert(`Failed to delete post: ${error.detail || "Unknown error"}`);
     }
-  };
+  } catch (error) {
+    console.error("Failed to delete post:", error);
+    alert("Failed to delete post. Please try again.");
+  }
+};
 
-  const handleDeletePost = async (postId: string) => {
-    if (!confirm("Are you sure you want to delete this post?")) return;
-
-    try {
-      const token = localStorage.getItem("admin_token");
-      const response = await fetch(`/api/v1/admin/blog/posts/${postId}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        await loadDashboardData();
-        alert("Post deleted successfully!");
-      } else {
-        const error = await response.json().catch(() => ({ detail: "Unknown error occurred" }));
-        alert(`Failed to delete post: ${error.detail || "Unknown error"}`);
+const handlePublishPost = async (postId: string) => {
+  try {
+    const token = localStorage.getItem("admin_token");
+    const response = await fetch(`/api/v1/admin/blog/posts/${postId}/publish`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`
       }
-    } catch (error) {
-      console.error("Failed to delete post:", error);
-      alert("Failed to delete post. Please try again.");
+    });
+
+    if (response.ok) {
+      await loadDashboardData();
+      alert("Post published successfully!");
+    } else {
+      const error = await response.json().catch(() => ({ detail: "Unknown error occurred" }));
+      console.error("Publish Post Error Detail:", error); // <-- Додано
+      alert(`Failed to publish post: ${error.detail || "Unknown error"}`);
     }
-  };
+  } catch (error) {
+    console.error("Failed to publish post:", error);
+    alert("Failed to publish post. Please try again.");
+  }
+};
 
-  const handlePublishPost = async (postId: string) => {
-    try {
-      const token = localStorage.getItem("admin_token");
-      const response = await fetch(`/api/v1/admin/blog/posts/${postId}/publish`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        await loadDashboardData();
-        alert("Post published successfully!");
-      } else {
-        const error = await response.json().catch(() => ({ detail: "Unknown error occurred" }));
-        alert(`Failed to publish post: ${error.detail || "Unknown error"}`);
+const handleUnpublishPost = async (postId: string) => {
+  try {
+    const token = localStorage.getItem("admin_token");
+    const response = await fetch(`/api/v1/admin/blog/posts/${postId}/unpublish`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`
       }
-    } catch (error) {
-      console.error("Failed to publish post:", error);
-      alert("Failed to publish post. Please try again.");
-    }
-  };
+    });
 
-  const handleUnpublishPost = async (postId: string) => {
-    try {
-      const token = localStorage.getItem("admin_token");
-      const response = await fetch(`/api/v1/admin/blog/posts/${postId}/unpublish`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        await loadDashboardData();
-        alert("Post unpublished successfully!");
-      } else {
-        const error = await response.json().catch(() => ({ detail: "Unknown error occurred" }));
-        alert(`Failed to unpublish post: ${error.detail || "Unknown error"}`);
-      }
-    } catch (error) {
-      console.error("Failed to unpublish post:", error);
-      alert("Failed to unpublish post. Please try again.");
+    if (response.ok) {
+      await loadDashboardData();
+      alert("Post unpublished successfully!");
+    } else {
+      const error = await response.json().catch(() => ({ detail: "Unknown error occurred" }));
+      console.error("Unpublish Post Error Detail:", error); // <-- Додано
+      alert(`Failed to unpublish post: ${error.detail || "Unknown error"}`);
     }
-  };
+  } catch (error) {
+    console.error("Failed to unpublish post:", error);
+    alert("Failed to unpublish post. Please try again.");
+  }
+};
+
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
