@@ -661,26 +661,26 @@ const handleUnpublishPost = async (postId: string) => {
                           <Edit className="h-4 w-4" />
                         </Button>
                         {post.status === "published" ? (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleUnpublishPost(post.id)}
-                            className="text-yellow-600 hover:text-yellow-700"
-                            title="Unpublish post"
-                          >
-                            <EyeOff className="h-4 w-4" />
-                          </Button>
-                        ) : (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handlePublishPost(post.id)}
-                            className="text-green-600 hover:text-green-700"
-                            title="Publish post"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        )}
+  <Button
+    variant="ghost"
+    size="sm"
+    onClick={() => handleUnpublishPost(post.id)}
+    className="text-green-600 hover:text-green-700"
+    title="Unpublish post"
+  >
+    <Eye className="h-4 w-4" />
+  </Button>
+) : (
+  <Button
+    variant="ghost"
+    size="sm"
+    onClick={() => handlePublishPost(post.id)}
+    className="text-yellow-600 hover:text-yellow-700"
+    title="Publish post"
+  >
+    <EyeOff className="h-4 w-4" />
+  </Button>
+)}
                         <Button
                           variant="ghost"
                           size="sm"
