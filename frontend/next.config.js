@@ -107,8 +107,8 @@ const nextConfig = {
           {
             key: 'Content-Security-Policy',
             value: process.env.NODE_ENV === 'production'
-              ? "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://eu.i.posthog.com https://app.posthog.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://eu.i.posthog.com https://app.posthog.com https://api.ipify.org https://ipapi.co https://ip-api.com https://api.ipgeolocation.io; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
-              : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://eu.i.posthog.com https://app.posthog.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://eu.i.posthog.com https://app.posthog.com https://api.ipify.org https://ipapi.co https://ip-api.com https://api.ipgeolocation.io ws://localhost:* http://localhost:*; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+              ? "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://eu.i.posthog.com https://app.posthog.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://ciupzfwuzkhzpzetrehl.supabase.co https://eu.i.posthog.com https://app.posthog.com https://api.ipify.org https://ipapi.co https://ip-api.com https://api.ipgeolocation.io; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+              : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://eu.i.posthog.com https://app.posthog.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://ciupzfwuzkhzpzetrehl.supabase.co https://eu.i.posthog.com https://app.posthog.com https://api.ipify.org https://ipapi.co https://ip-api.com https://api.ipgeolocation.io ws://localhost:* http://localhost:*; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
           },
         ],
       },
