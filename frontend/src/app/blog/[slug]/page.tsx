@@ -5,14 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Calendar, User, Tag, ArrowLeft, Clock } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from 'next';
-import dynamic from 'next/dynamic';
+import { ShareButton } from './share-button';
 import { sanitizeHtml } from '@/lib/security';
-
-// Dynamically import ShareButton as a client component
-const ShareButton = dynamic(
-  () => import('./share-button').then(mod => mod.ShareButton),
-  { ssr: false }
-);
 
 interface BlogPost {
   id: string;
@@ -40,8 +34,8 @@ interface BlogPostPageProps {
 // Function to fetch blog post data
 async function getBlogPost(slug: string): Promise<BlogPost | null> {
   try {
-    const baseUrl = process.env.NODE_ENV === 'production'
-      ? 'https://your-domain.com'
+    const baseUrl = process.env.NODE_ENV === 'production' 
+      ? 'https://your-domain.com' 
       : 'http://localhost:8000';
     
     const response = await fetch(`${baseUrl}/api/v1/blog/posts/${slug}`, {
@@ -78,14 +72,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       openGraph: {
         title: 'Blog Post Not Found',
         description: 'The requested blog post could not be found.',
-        images: [
-          {
-            url: "/og-image.png",
-            width: 1200,
-            height: 630,
-            alt: "Blog Article - whatismyip.world",
-          },
-        ],
+              images: [
+        {
+          url: "/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: "Blog Article - whatismyip.world",
+        },
+      ],
       },
       twitter: {
         card: 'summary_large_image',
@@ -112,14 +106,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       modifiedTime: post.updated_at,
       authors: [post.author],
       tags: post.tags,
-      images: [
-        {
-          url: "/og-image.png",
-          width: 1200,
-          height: 630,
-          alt: `Blog Post - ${post.title}`,
-        },
-      ],
+              images: [
+          {
+            url: "/og-image.png",
+            width: 1200,
+            height: 630,
+            alt: "Blog Post Not Found - whatismyip.world",
+          },
+        ],
     },
     twitter: {
       card: 'summary_large_image',
@@ -254,5 +248,4 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </div>
     </div>
   );
-}
- 
+} 
