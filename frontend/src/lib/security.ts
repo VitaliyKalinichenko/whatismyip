@@ -7,28 +7,22 @@ export class CSRFProtection {
   private static tokenKey = 'csrf_token';
   private static tokenExpiry = 24 * 60 * 60 * 1000; // 24 hours
 
-  /**
-   * Generate a new CSRF token
-   */
   static generateToken(): string {
     const token = crypto.getRandomValues(new Uint8Array(32))
       .reduce((acc, val) => acc + val.toString(16).padStart(2, '0'), '');
-    
+
     const tokenData = {
       token,
       expires: Date.now() + this.tokenExpiry
     };
-    
+
     if (typeof window !== 'undefined') {
       sessionStorage.setItem(this.tokenKey, JSON.stringify(tokenData));
     }
-    
+
     return token;
   }
 
-  /**
-   * Get the current CSRF token, generating a new one if needed
-   */
   static getToken(): string {
     if (typeof window === 'undefined') {
       return '';
@@ -50,9 +44,6 @@ export class CSRFProtection {
     }
   }
 
-  /**
-   * Validate a CSRF token
-   */
   static validateToken(token: string): boolean {
     if (typeof window === 'undefined') {
       return false;
@@ -74,9 +65,6 @@ export class CSRFProtection {
     }
   }
 
-  /**
-   * Clear the CSRF token
-   */
   static clearToken(): void {
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem(this.tokenKey);
@@ -84,19 +72,19 @@ export class CSRFProtection {
   }
 }
 
-// 🔒 SECURITY - Enhanced Content Security Policy
+// 🔒 SECURITY - Content Security Policy
 export const CSP_POLICY = {
   'default-src': ["'self'"],
   'script-src': [
     "'self'",
-    "'unsafe-inline'", // Required for Next.js
-    "'unsafe-eval'",   // Required for Next.js development
+    "'unsafe-inline'",
+    "'unsafe-eval'",
     'https://www.googletagmanager.com',
     'https://www.google-analytics.com'
   ],
   'style-src': [
     "'self'",
-    "'unsafe-inline'", // Required for styled-components
+    "'unsafe-inline'",
     'https://fonts.googleapis.com'
   ],
   'font-src': [
@@ -117,42 +105,25 @@ export const CSP_POLICY = {
     'https://api.ipify.org',
     'https://ip-api.com'
   ],
-  'frame-src': [
-    "'none'"
-  ],
-  'object-src': [
-    "'none'"
-  ],
-  'base-uri': [
-    "'self'"
-  ],
-  'form-action': [
-    "'self'"
-  ],
-  'frame-ancestors': [
-    "'none'"
-  ],
+  'frame-src': ["'none'"],
+  'object-src': ["'none'"],
+  'base-uri': ["'self'"],
+  'form-action': ["'self'"],
+  'frame-ancestors': ["'none'"],
   'upgrade-insecure-requests': []
 };
 
 // 🔒 SECURITY - XSS Prevention utilities
 export class XSSPrevention {
-  /**
-   * Escape HTML to prevent XSS
-   */
   static escapeHtml(text: string): string {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
   }
 
-  /**
-   * Validate and sanitize URLs
-   */
   static sanitizeUrl(url: string): string {
     try {
       const urlObj = new URL(url);
-      // Only allow http and https protocols
       if (!['http:', 'https:'].includes(urlObj.protocol)) {
         return '';
       }
@@ -162,24 +133,18 @@ export class XSSPrevention {
     }
   }
 
-  /**
-   * Validate email format
-   */
   static validateEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
 }
 
-// 🔒 SECURITY - Rate limiting utilities
+// 🔒 SECURITY - Rate Limiting
 export class RateLimiter {
   private static requests = new Map<string, { count: number; resetTime: number }>();
   private static maxRequests = 100;
-  private static windowMs = 60 * 1000; // 1 minute
+  private static windowMs = 60 * 1000;
 
-  /**
-   * Check if a request is allowed
-   */
   static isAllowed(identifier: string): boolean {
     const now = Date.now();
     const requestData = this.requests.get(identifier);
@@ -197,36 +162,24 @@ export class RateLimiter {
     return true;
   }
 
-  /**
-   * Clear rate limiting data
-   */
   static clear(): void {
     this.requests.clear();
   }
 }
 
-// 🔒 SECURITY - Secure storage utilities
+// 🔒 SECURITY - Secure Storage
 export class SecureStorage {
-  /**
-   * Store data securely (encrypted in production)
-   */
   static setItem(key: string, value: string): void {
     if (typeof window === 'undefined') return;
-    
     try {
-      // In production, this should be encrypted
       localStorage.setItem(key, value);
     } catch (error) {
       console.error('Failed to store data securely:', error);
     }
   }
 
-  /**
-   * Retrieve data securely
-   */
   static getItem(key: string): string | null {
     if (typeof window === 'undefined') return null;
-    
     try {
       return localStorage.getItem(key);
     } catch (error) {
@@ -235,12 +188,8 @@ export class SecureStorage {
     }
   }
 
-  /**
-   * Remove data securely
-   */
   static removeItem(key: string): void {
     if (typeof window === 'undefined') return;
-    
     try {
       localStorage.removeItem(key);
     } catch (error) {
@@ -249,25 +198,20 @@ export class SecureStorage {
   }
 }
 
-// 🔒 SECURITY - Input validation utilities
+// 🔒 SECURITY - Input Validation
 export class InputValidation {
-  /**
-   * Validate and sanitize user input
-   */
   static sanitizeInput(input: string, maxLength: number = 1000): string {
     if (!input || typeof input !== 'string') {
       return '';
     }
 
-    // Remove dangerous characters
     const dangerousChars = ['<', '>', '"', "'", '&', ';', '|', '`', '$', '(', ')'];
     let sanitized = input;
-    
+
     for (const char of dangerousChars) {
       sanitized = sanitized.replace(new RegExp(char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '');
     }
 
-    // Limit length
     if (sanitized.length > maxLength) {
       sanitized = sanitized.substring(0, maxLength);
     }
@@ -275,17 +219,11 @@ export class InputValidation {
     return sanitized.trim();
   }
 
-  /**
-   * Validate domain name
-   */
   static validateDomain(domain: string): boolean {
     const domainRegex = /^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$/;
     return domainRegex.test(domain) && domain.length <= 253;
   }
 
-  /**
-   * Validate IP address
-   */
   static validateIP(ip: string): boolean {
     const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     const ipv6Regex = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
@@ -293,7 +231,7 @@ export class InputValidation {
   }
 }
 
-// 🔒 SECURITY - Security headers configuration
+// 🔒 SECURITY - Security Headers
 export const SECURITY_HEADERS = {
   'X-Frame-Options': 'DENY',
   'X-Content-Type-Options': 'nosniff',
@@ -306,20 +244,16 @@ export const SECURITY_HEADERS = {
     .join('; ')
 };
 
-// 🔒 SECURITY - Initialize security features
+// 🔒 SECURITY - Initialize security on frontend
 export function initializeSecurity(): void {
   if (typeof window === 'undefined') return;
 
-  // Generate CSRF token on app start
   CSRFProtection.generateToken();
 
-  // Add security event listeners
   window.addEventListener('beforeunload', () => {
-    // Clear sensitive data on page unload
     SecureStorage.removeItem('temp_auth_data');
   });
 
-  // Monitor for potential XSS attempts
   const originalInnerHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
   if (originalInnerHTML) {
     Object.defineProperty(Element.prototype, 'innerHTML', {
@@ -335,7 +269,7 @@ export function initializeSecurity(): void {
       }
     });
   }
-} 
+}
 
 /**
  * Sanitize HTML content to prevent XSS attacks
@@ -347,11 +281,14 @@ export function sanitizeHtml(html: string): string {
     return '';
   }
 
-  // Create a temporary div to parse and sanitize HTML
+  if (typeof window === 'undefined') {
+    // On SSR, return plain text (safe fallback)
+    return html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = html;
 
-  // Remove dangerous tags
   const dangerousTags = [
     'script', 'iframe', 'object', 'embed', 'form', 'input', 'textarea',
     'select', 'button', 'link', 'meta', 'style', 'title', 'base',
@@ -363,11 +300,10 @@ export function sanitizeHtml(html: string): string {
     elements.forEach(el => el.remove());
   });
 
-  // Remove dangerous attributes
   const dangerousAttrs = [
     'onload', 'onerror', 'onclick', 'onmouseover', 'onfocus', 'onblur',
     'onchange', 'onsubmit', 'onreset', 'onselect', 'onunload', 'onabort',
-    'onbeforeunload', 'onerror', 'onhashchange', 'onmessage', 'onoffline',
+    'onbeforeunload', 'onhashchange', 'onmessage', 'onoffline',
     'ononline', 'onpagehide', 'onpageshow', 'onpopstate', 'onresize',
     'onstorage', 'oncontextmenu', 'onkeydown', 'onkeypress', 'onkeyup',
     'onmousedown', 'onmousemove', 'onmouseout', 'onmouseup', 'onwheel'
@@ -381,7 +317,6 @@ export function sanitizeHtml(html: string): string {
       }
     });
 
-    // Remove javascript: and data: URLs
     const href = el.getAttribute('href');
     if (href && (href.toLowerCase().startsWith('javascript:') || href.toLowerCase().startsWith('data:'))) {
       el.removeAttribute('href');
@@ -394,4 +329,4 @@ export function sanitizeHtml(html: string): string {
   });
 
   return tempDiv.innerHTML;
-} 
+}
