@@ -90,32 +90,62 @@ export default function BlogClient() {
   }, [currentPage, selectedTag]);
 
   const fetchPosts = async () => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        per_page: "6"
-      });
-      
-      if (selectedTag) {
-        params.append("tag", selectedTag);
-      }
-
-      const response = await fetch(`/api/v1/blog/posts?${params}`);
-      
-      if (!response.ok) {
-        throw new Error("Failed to fetch blog posts");
-      }
-      
-      const data: BlogResponse = await response.json();
-      setPosts(data.posts);
-      setTotalPages(data.total_pages);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setLoading(false);
+  try {
+    setLoading(true);
+    const params = new URLSearchParams({
+      page: currentPage.toString(),
+      per_page: "6"
+    });
+    
+    if (selectedTag) {
+      params.append("tag", selectedTag);
     }
-  };
+
+    console.log('🔍 Fetching posts from:', `/api/v1/blog/posts?${params}`);
+
+    const response = await fetch(`/api/v1/blog/posts?${params}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: Failed to fetch blog posts`);
+    }
+    
+    const data: BlogResponse = await response.json();
+    
+    console.log('📦 Raw API response:', data);
+    console.log('📋 Posts array:', data.posts);
+    console.log('📊 Total posts:', data.total);
+    
+    // 🔥 ПЕРЕВІРЯЄМО ЧИ Є ПОСТИ
+    if (!data.posts || !Array.isArray(data.posts)) {
+      console.error('❌ Posts is not an array:', data.posts);
+      setPosts([]);
+      setTotalPages(0);
+      return;
+    }
+    
+    // 🔥 ФІЛЬТРУЄМО ТІЛЬКИ PUBLISHED ПОСТИ (додаткова перевірка)
+    const publishedPosts = data.posts.filter(post => {
+      console.log(`📝 Post "${post.title}" has status: "${post.status}"`);
+      return post.status === 'published';
+    });
+    
+    console.log('✅ Published posts after filter:', publishedPosts);
+    console.log('📊 Published posts count:', publishedPosts.length);
+    
+    setPosts(publishedPosts);
+    setTotalPages(data.total_pages || 1);
+    
+    if (publishedPosts.length === 0) {
+      console.warn('⚠️ No published posts found! Check if posts have status="published"');
+    }
+    
+  } catch (err) {
+    console.error('❌ Error fetching posts:', err);
+    setError(err instanceof Error ? err.message : "An error occurred");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const fetchTags = async () => {
     try {
