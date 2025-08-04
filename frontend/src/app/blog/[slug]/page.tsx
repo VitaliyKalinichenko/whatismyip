@@ -230,7 +230,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   />
                 </div>
               )}
-// Замініть блок Content на цей код:
 
 {/* Content */}
 <div className="prose prose-lg max-w-full dark:prose-invert prose-headings:font-semibold prose-p:leading-7 prose-li:leading-6 prose-img:max-w-full prose-img:h-auto prose-pre:overflow-x-auto prose-pre:max-w-full prose-table:max-w-full prose-table:overflow-x-auto blog-content">
