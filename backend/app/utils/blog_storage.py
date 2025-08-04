@@ -170,46 +170,49 @@ class BlogStorage:
             logger.error(f"Failed to delete post {post_id}: {e}")
             return False
     
-    def get_posts(self, 
+  def get_posts(self, 
                   status: Optional[BlogPostStatus] = None,
                   page: int = 1,
                   per_page: int = 10,
                   tag: Optional[str] = None) -> tuple[List[BlogPost], int]:
         """Get paginated list of blog posts."""
         try:
-            # Build query parameters
+            # Build query parameters - ВИПРАВЛЕНИЙ СИНТАКСИС
             params = {
                 "select": "*",
-                "order": "updated_at.desc",
-                "offset": (page - 1) * per_page,
-                "limit": per_page
+                "order": "updated_at.desc"
             }
             
-            # Filter by status
+            # Filter by status - ВИПРАВЛЕНИЙ СИНТАКСИС
             if status:
                 params["status"] = f"eq.{status.value}"
             
-            # Filter by tag
+            # Filter by tag - ВИПРАВЛЕНИЙ СИНТАКСИС (якщо потрібно)
             if tag:
-                params["tags"] = f"cs.{{{tag}}}"  # contains array element
+                params["tags"] = f"cs.{{{tag}}}"
             
-            # Get posts
-            result = self._make_request("GET", "posts", params=params)
+            # Get ALL posts first (without pagination for simplicity)
+            url = f"{self.api_url}/posts"
             
-            # Get total count
-            count_params = {"select": "*"}
-            if status:
-                count_params["status"] = f"eq.{status.value}"
-            if tag:
-                count_params["tags"] = f"cs.{{{tag}}}"
+            with httpx.Client() as client:
+                response = client.get(url, headers=self.headers, params=params)
+                response.raise_for_status()
+                result = response.json() if response.content else []
             
-            # For total count, we need to make another request
-            # This is a limitation of the simple approach, but works
-            all_results = self._make_request("GET", "posts", params=count_params)
-            total = len(all_results)
+            # Apply pagination in Python (easier than Supabase syntax)
+            total = len(result)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_result = result[start:end]
             
             # Convert to BlogPost objects
-            blog_posts = [BlogPost(**post_data) for post_data in result]
+            blog_posts = []
+            for post_data in paginated_result:
+                try:
+                    blog_posts.append(BlogPost(**post_data))
+                except Exception as e:
+                    logger.error(f"Failed to parse post {post_data.get('id', 'unknown')}: {e}")
+                    continue
             
             logger.info(f"Retrieved {len(blog_posts)} posts (total: {total})")
             return blog_posts, total
