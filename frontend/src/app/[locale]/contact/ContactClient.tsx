@@ -124,7 +124,7 @@ export default function ContactClient() {
                 <div>
                   <p className="font-medium">Email Support</p>
                   <a
-                    href="mailto:support@whatismyipworld.com"
+                    href="mailto:support@whatismyipworld.world"
                     className="text-blue-600 hover:text-blue-700"
                   >
                     support@whatismyipworld.com
