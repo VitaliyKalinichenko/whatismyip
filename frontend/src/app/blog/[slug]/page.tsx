@@ -230,22 +230,28 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   />
                 </div>
               )}
+// Замініть блок Content на цей код:
 
-              {/* Content */}
-              <div className="prose prose-lg max-w-full dark:prose-invert prose-headings:font-semibold prose-p:leading-7 prose-li:leading-6 prose-img:max-w-full prose-img:h-auto prose-pre:overflow-x-auto prose-pre:max-w-full prose-table:max-w-full prose-table:overflow-x-auto blog-content">
-                <div 
-                  dangerouslySetInnerHTML={{ 
-    __html: sanitizeHtml(
-      post.content
-        .split('\n\n')  // Split by double newlines for paragraphs
-        .map(paragraph => paragraph.trim() ? `<p>${paragraph.replace(/\n/g, '<br>')}</p>` : '')
-        .filter(p => p)  // Remove empty paragraphs
-        .join('')
-    )
-  }}
-  className="break-words overflow-wrap-anywhere"
-                />
-              </div>
+{/* Content */}
+<div className="prose prose-lg max-w-full dark:prose-invert prose-headings:font-semibold prose-p:leading-7 prose-li:leading-6 prose-img:max-w-full prose-img:h-auto prose-pre:overflow-x-auto prose-pre:max-w-full prose-table:max-w-full prose-table:overflow-x-auto blog-content">
+  <div className="break-words overflow-wrap-anywhere">
+    {post.content.split('\n\n').map((paragraph, index) => {
+      if (paragraph.trim()) {
+        return (
+          <p key={index} className="mb-4">
+            {paragraph.split('\n').map((line, lineIndex, lines) => (
+              <span key={lineIndex}>
+                {line}
+                {lineIndex < lines.length - 1 && <br />}
+              </span>
+            ))}
+          </p>
+        );
+      }
+      return null;
+    })}
+  </div>
+</div>
 
               {/* Share Actions */}
               <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
