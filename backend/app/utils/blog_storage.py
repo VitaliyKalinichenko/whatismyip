@@ -170,7 +170,7 @@ class BlogStorage:
             logger.error(f"Failed to delete post {post_id}: {e}")
             return False
     
-  def get_posts(self, 
+    def get_posts(self, 
                   status: Optional[BlogPostStatus] = None,
                   page: int = 1,
                   per_page: int = 10,
