@@ -234,8 +234,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               {/* Content */}
               <div className="prose prose-lg max-w-full dark:prose-invert prose-headings:font-semibold prose-p:leading-7 prose-li:leading-6 prose-img:max-w-full prose-img:h-auto prose-pre:overflow-x-auto prose-pre:max-w-full prose-table:max-w-full prose-table:overflow-x-auto blog-content">
                 <div 
-                  dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-                  className="break-words overflow-wrap-anywhere"
+                  dangerouslySetInnerHTML={{ 
+    __html: sanitizeHtml(
+      post.content
+        .split('\n\n')  // Split by double newlines for paragraphs
+        .map(paragraph => paragraph.trim() ? `<p>${paragraph.replace(/\n/g, '<br>')}</p>` : '')
+        .filter(p => p)  // Remove empty paragraphs
+        .join('')
+    )
+  }}
+  className="break-words overflow-wrap-anywhere"
                 />
               </div>
 
