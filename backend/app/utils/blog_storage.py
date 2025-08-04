@@ -1,25 +1,55 @@
 import os
 import secrets
+import httpx
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 from app.models.blog_models import BlogPost, BlogPostCreate, BlogPostUpdate, BlogPostStatus, BlogPostListResponse
-from supabase import create_client, Client
 import logging
 
 logger = logging.getLogger(__name__)
 
 class BlogStorage:
     def __init__(self):
-        # Initialize Supabase client
-        supabase_url = os.getenv("SUPABASE_URL")
-        supabase_key = os.getenv("SUPABASE_ANON_KEY")
+        # Get Supabase credentials from environment
+        self.supabase_url = os.getenv("SUPABASE_URL")
+        self.supabase_key = os.getenv("SUPABASE_ANON_KEY")
         
-        if not supabase_url or not supabase_key:
+        if not self.supabase_url or not self.supabase_key:
             logger.error("SUPABASE_URL and SUPABASE_ANON_KEY environment variables are required")
             raise ValueError("SUPABASE_URL and SUPABASE_ANON_KEY environment variables are required")
         
-        self.supabase: Client = create_client(supabase_url, supabase_key)
-        logger.info("BlogStorage initialized with Supabase connection")
+        # Setup REST API endpoint
+        self.api_url = f"{self.supabase_url}/rest/v1"
+        self.headers = {
+            "apikey": self.supabase_key,
+            "Authorization": f"Bearer {self.supabase_key}",
+            "Content-Type": "application/json",
+            "Prefer": "return=representation"
+        }
+        
+        logger.info("BlogStorage initialized with Supabase REST API")
+    
+    def _make_request(self, method: str, endpoint: str, data: dict = None, params: dict = None):
+        """Make HTTP request to Supabase REST API."""
+        url = f"{self.api_url}/{endpoint}"
+        
+        try:
+            with httpx.Client() as client:
+                if method == "GET":
+                    response = client.get(url, headers=self.headers, params=params)
+                elif method == "POST":
+                    response = client.post(url, headers=self.headers, json=data)
+                elif method == "PATCH":
+                    response = client.patch(url, headers=self.headers, json=data, params=params)
+                elif method == "DELETE":
+                    response = client.delete(url, headers=self.headers, params=params)
+                
+                response.raise_for_status()
+                return response.json() if response.content else []
+                
+        except Exception as e:
+            logger.error(f"Supabase API request failed: {e}")
+            raise
     
     def generate_slug(self, title: str) -> str:
         """Generate a URL-friendly slug from title."""
@@ -34,8 +64,8 @@ class BlogStorage:
         counter = 1
         while True:
             try:
-                existing = self.supabase.table("posts").select("id").eq("slug", slug).execute()
-                if not existing.data:
+                existing = self._make_request("GET", "posts", params={"slug": f"eq.{slug}", "select": "id"})
+                if not existing:
                     break
                 slug = f"{base_slug}-{counter}"
                 counter += 1
@@ -67,20 +97,16 @@ class BlogStorage:
             "seo_description": post_data.seo_description
         }
         
-        try:
-            result = self.supabase.table("posts").insert(post_dict).execute()
-            logger.info(f"Created blog post: {post_data.title}")
-            return BlogPost(**result.data[0])
-        except Exception as e:
-            logger.error(f"Failed to create blog post: {e}")
-            raise
+        result = self._make_request("POST", "posts", data=post_dict)
+        logger.info(f"Created blog post: {post_data.title}")
+        return BlogPost(**result[0])
     
     def get_post(self, post_id: str) -> Optional[BlogPost]:
         """Get a single blog post by ID."""
         try:
-            result = self.supabase.table("posts").select("*").eq("id", post_id).execute()
-            if result.data:
-                return BlogPost(**result.data[0])
+            result = self._make_request("GET", "posts", params={"id": f"eq.{post_id}"})
+            if result:
+                return BlogPost(**result[0])
             return None
         except Exception as e:
             logger.error(f"Failed to get post {post_id}: {e}")
@@ -89,9 +115,9 @@ class BlogStorage:
     def get_post_by_slug(self, slug: str) -> Optional[BlogPost]:
         """Get a single blog post by slug."""
         try:
-            result = self.supabase.table("posts").select("*").eq("slug", slug).execute()
-            if result.data:
-                return BlogPost(**result.data[0])
+            result = self._make_request("GET", "posts", params={"slug": f"eq.{slug}"})
+            if result:
+                return BlogPost(**result[0])
             return None
         except Exception as e:
             logger.error(f"Failed to get post by slug {slug}: {e}")
@@ -101,11 +127,11 @@ class BlogStorage:
         """Update an existing blog post."""
         try:
             # Get existing post
-            existing = self.supabase.table("posts").select("*").eq("id", post_id).execute()
-            if not existing.data:
+            existing = self._make_request("GET", "posts", params={"id": f"eq.{post_id}"})
+            if not existing:
                 return None
             
-            post_dict = existing.data[0]
+            post_dict = existing[0]
             update_data = post_data.dict(exclude_unset=True)
             
             # Handle slug update if title changed
@@ -123,11 +149,11 @@ class BlogStorage:
             update_data["updated_at"] = datetime.utcnow().isoformat()
             
             # Update in database
-            result = self.supabase.table("posts").update(update_data).eq("id", post_id).execute()
+            result = self._make_request("PATCH", "posts", data=update_data, params={"id": f"eq.{post_id}"})
             
-            if result.data:
+            if result:
                 logger.info(f"Updated blog post: {post_id}")
-                return BlogPost(**result.data[0])
+                return BlogPost(**result[0])
             return None
             
         except Exception as e:
@@ -137,9 +163,9 @@ class BlogStorage:
     def delete_post(self, post_id: str) -> bool:
         """Delete a blog post."""
         try:
-            result = self.supabase.table("posts").delete().eq("id", post_id).execute()
+            result = self._make_request("DELETE", "posts", params={"id": f"eq.{post_id}"})
             logger.info(f"Deleted blog post: {post_id}")
-            return len(result.data) > 0
+            return True
         except Exception as e:
             logger.error(f"Failed to delete post {post_id}: {e}")
             return False
@@ -151,29 +177,39 @@ class BlogStorage:
                   tag: Optional[str] = None) -> tuple[List[BlogPost], int]:
         """Get paginated list of blog posts."""
         try:
-            # Build query
-            query = self.supabase.table("posts").select("*", count="exact")
+            # Build query parameters
+            params = {
+                "select": "*",
+                "order": "updated_at.desc",
+                "offset": (page - 1) * per_page,
+                "limit": per_page
+            }
             
             # Filter by status
             if status:
-                query = query.eq("status", status.value)
+                params["status"] = f"eq.{status.value}"
             
-            # Filter by tag (PostgreSQL array contains)
+            # Filter by tag
             if tag:
-                query = query.contains("tags", [tag])
+                params["tags"] = f"cs.{{{tag}}}"  # contains array element
             
-            # Order by updated_at
-            query = query.order("updated_at", desc=True)
+            # Get posts
+            result = self._make_request("GET", "posts", params=params)
             
-            # Pagination
-            start = (page - 1) * per_page
-            query = query.range(start, start + per_page - 1)
+            # Get total count
+            count_params = {"select": "*"}
+            if status:
+                count_params["status"] = f"eq.{status.value}"
+            if tag:
+                count_params["tags"] = f"cs.{{{tag}}}"
             
-            result = query.execute()
+            # For total count, we need to make another request
+            # This is a limitation of the simple approach, but works
+            all_results = self._make_request("GET", "posts", params=count_params)
+            total = len(all_results)
             
             # Convert to BlogPost objects
-            blog_posts = [BlogPost(**post_data) for post_data in result.data]
-            total = result.count if result.count else 0
+            blog_posts = [BlogPost(**post_data) for post_data in result]
             
             logger.info(f"Retrieved {len(blog_posts)} posts (total: {total})")
             return blog_posts, total
@@ -190,10 +226,10 @@ class BlogStorage:
         """Get all unique tags used in blog posts."""
         try:
             # Get all posts and extract tags
-            result = self.supabase.table("posts").select("tags").execute()
+            result = self._make_request("GET", "posts", params={"select": "tags"})
             
             all_tags = set()
-            for post in result.data:
+            for post in result:
                 if post.get('tags'):
                     all_tags.update(post['tags'])
             
@@ -207,8 +243,8 @@ class BlogStorage:
         """Get blog analytics data."""
         try:
             # Get all posts for analytics
-            result = self.supabase.table("posts").select("*").execute()
-            posts_list = result.data
+            result = self._make_request("GET", "posts")
+            posts_list = result
             
             total_posts = len(posts_list)
             published_posts = len([p for p in posts_list if p.get('status') == BlogPostStatus.PUBLISHED.value])
