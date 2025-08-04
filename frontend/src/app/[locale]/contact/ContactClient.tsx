@@ -14,10 +14,43 @@ function ContactForm() {
   });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    console.log('Form submitted:', formData);
-  };
+  e.preventDefault();
+  
+  // Перевірка чи заповнені обов'язкові поля
+  if (!formData.name || !formData.email || !formData.message) {
+    alert('Please fill in all required fields');
+    return;
+  }
+  
+  // Формуємо дані для email
+  const subject = encodeURIComponent(
+    formData.subject ? `Contact Form: ${formData.subject}` : 'Contact Form Message'
+  );
+  
+  const body = encodeURIComponent(
+    `New message from whatismyip.world contact form:\n\n` +
+    `Name: ${formData.name}\n` +
+    `Email: ${formData.email}\n` +
+    `Subject: ${formData.subject || 'No subject'}\n\n` +
+    `Message:\n${formData.message}\n\n` +
+    `---\n` +
+    `Sent from whatismyip.world contact form`
+  );
+  
+  // Відкриваємо email клієнт користувача з підготовленим листом
+  window.open(`mailto:support@whatismyip.world?subject=${subject}&body=${body}`);
+  
+  // Показуємо повідомлення про успіх
+  alert('Email client opened! Please send the message from your email application.');
+  
+  // Очищуємо форму після відправки
+  setFormData({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+};
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
