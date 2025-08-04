@@ -217,17 +217,7 @@ export default function BlogClient() {
 
   return (
     <div className="space-y-8">
-        <div className="text-center mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm">
-        <div><strong>Debug Info:</strong></div>
-        <div>API Posts: {posts.length} | Loading: {loading ? 'yes' : 'no'} | Error: {error || 'none'}</div>
-        {posts.length > 0 && (
-          <div className="mt-1">
-            Statuses: {posts.map(p => `"${p.title.substring(0, 20)}..." (${p.status})`).join(' | ')}
-          </div>
-        )}
-        <div className="mt-1">Filtered: {filteredPosts.length} posts shown</div>
-      </div>
-      {/* Search and Filters */}
+            {/* Search and Filters */}
       <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg">
         <div className="flex flex-col md:flex-row gap-4 mb-4">
           <form onSubmit={handleSearch} className="flex-1">
