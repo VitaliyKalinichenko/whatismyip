@@ -127,7 +127,7 @@ export default function ContactClient() {
                     href="mailto:support@whatismyipworld.world"
                     className="text-blue-600 hover:text-blue-700"
                   >
-                    support@whatismyipworld.com
+                    support@whatismyipworld.world
                   </a>
                 </div>
               </div>
