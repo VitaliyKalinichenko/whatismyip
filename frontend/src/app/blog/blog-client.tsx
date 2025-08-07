@@ -71,10 +71,14 @@ async function fetchBlogData(page: number, tag: string | null, search: string | 
   };
 }
 
-export default async function BlogPage({ searchParams }: { searchParams: { page?: string; tag?: string; search?: string } }) {
-  const page = parseInt(searchParams.page || "1");
-  const tag = searchParams.tag || null;
-  const search = searchParams.search || null;
+export default async function BlogPage({
+  searchParams
+}: {
+  searchParams?: { page?: string; tag?: string; search?: string };
+} = {}) {
+  const page = parseInt(searchParams?.page || "1");
+  const tag = searchParams?.tag || null;
+  const search = searchParams?.search || null;
 
   let posts: BlogPost[] = [];
   let tags: string[] = [];
