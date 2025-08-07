@@ -24,16 +24,18 @@ class BlogPost(BaseModel):
     featured_image: Optional[str] = None
     seo_title: Optional[str] = Field(None, max_length=60)
     seo_description: Optional[str] = Field(None, max_length=160)
-    
+
     @validator('slug')
     def validate_slug(cls, v):
         import re
         if not re.match(r'^[a-z0-9-]+$', v):
             raise ValueError('Slug must contain only lowercase letters, numbers, and hyphens')
         return v
-    
-    @validator('tags')
+
+    @validator('tags', pre=True, always=True)
     def validate_tags(cls, v):
+        if v is None:
+            return []
         if len(v) > 10:
             raise ValueError('Maximum 10 tags allowed')
         return v
@@ -66,7 +68,7 @@ class BlogPostResponse(BaseModel):
     content: str
     author: str
     status: BlogPostStatus
-    tags: List[str]
+    tags: List[str] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime
     published_at: Optional[datetime]
@@ -81,7 +83,7 @@ class BlogPostListResponse(BaseModel):
     excerpt: str
     author: str
     status: BlogPostStatus
-    tags: List[str]
+    tags: List[str] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime
     published_at: Optional[datetime]
@@ -143,4 +145,4 @@ class BlogAnalytics(BaseModel):
 class BlogError(BaseModel):
     error: str
     detail: str
-    timestamp: datetime 
+    timestamp: datetime
