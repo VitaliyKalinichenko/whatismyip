@@ -217,33 +217,6 @@ export default function BlogClient() {
 
   return (
     <div className="space-y-8">
-{/* 🔥 SIMPLE DEBUG PANEL */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-        <h3 className="text-lg font-semibold text-blue-800 mb-2">🔍 Debug Information</h3>
-        <div className="text-sm text-blue-700 space-y-2">
-          <p><strong>API Posts:</strong> {posts.length}</p>
-          <p><strong>Loading:</strong> {loading ? 'yes' : 'no'}</p>
-          <p><strong>Error:</strong> {error || 'none'}</p>
-          <p><strong>Published Posts:</strong> {posts.filter(p => p.status === 'published').length}</p>
-          <p><strong>Filtered Posts Shown:</strong> {filteredPosts.length}</p>
-          
-          {posts.length > 0 && (
-            <div>
-              <strong>All Posts & Statuses:</strong>
-              <ul className="ml-4 mt-1 max-h-32 overflow-y-auto">
-                {posts.map((post, idx) => (
-                  <li key={idx} className="font-mono text-xs">
-                    "{post.title.substring(0, 30)}..." → 
-                    <span className={post.status === 'published' ? 'text-green-600' : 'text-yellow-600'}>
-                      ({post.status})
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      </div>
             {/* Search and Filters */}
       <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg">
         <div className="flex flex-col md:flex-row gap-4 mb-4">
