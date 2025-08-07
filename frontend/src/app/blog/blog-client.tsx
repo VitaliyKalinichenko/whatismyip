@@ -1,18 +1,12 @@
-/*
-  ✅ Full SSR Blog Page with Pagination, Tag Filtering, and Search
-  ✅ Built for Next.js App Router (`app/blog/page.tsx`)
-  ✅ Uses `searchParams` for pagination, search, and tag filters
-  ✅ No `use client`, fully SSR
-  ✅ Compatible with /api/v1/blog/posts and /api/v1/blog/tags
-*/
+"use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Globe, Shield, Eye, Search, Calendar, User, Tag, ChevronRight, ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 interface BlogPost {
   id: string;
@@ -36,124 +30,297 @@ interface BlogResponse {
   total_pages: number;
 }
 
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+// Окремий компонент для тегів з інтерактивністю
+function TagButton({ 
+  tag, 
+  isSelected, 
+  onSelect 
+}: { 
+  tag: string; 
+  isSelected: boolean; 
+  onSelect: (tag: string) => void; 
+}) {
+  return (
+    <button
+      onClick={() => onSelect(tag)}
+      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+        isSelected
+          ? "bg-blue-600 text-white"
+          : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+      }`}
+    >
+      {tag}
+    </button>
+  );
 }
 
-async function fetchBlogData(page: number, tag: string | null, search: string | null): Promise<{ posts: BlogPost[]; tags: string[]; totalPages: number; currentPage: number }> {
-  const params = new URLSearchParams({
-    page: page.toString(),
-    per_page: "6",
-  });
-  if (tag) params.append("tag", tag);
-  if (search) params.append("search", search);
-
-  const [postsRes, tagsRes] = await Promise.all([
-    fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v1/blog/posts?${params.toString()}`, { next: { revalidate: 60 } }),
-    fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v1/blog/tags`, { next: { revalidate: 60 } }),
-  ]);
-
-  if (!postsRes.ok || !tagsRes.ok) throw new Error("Failed to fetch blog data");
-
-  const postData: BlogResponse = await postsRes.json();
-  const publishedPosts = postData.posts.filter((post) => post.status === "published");
-  const tags = await tagsRes.json();
-
-  return {
-    posts: publishedPosts,
-    tags,
-    totalPages: postData.total_pages,
-    currentPage: postData.page,
-  };
+// Окремий компонент для тегів в картці поста
+function PostTagBadge({ 
+  tag, 
+  onSelect 
+}: { 
+  tag: string; 
+  onSelect: (tag: string) => void; 
+}) {
+  return (
+    <Badge
+      variant="secondary"
+      className="text-xs cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900"
+      onClick={() => onSelect(tag)}
+    >
+      <Tag className="h-3 w-3 mr-1" />
+      {tag}
+    </Badge>
+  );
 }
 
-export default async function BlogPage({
-  searchParams
-}: {
-  searchParams?: { page?: string; tag?: string; search?: string };
-} = {}) {
-  const page = parseInt(searchParams?.page || "1");
-  const tag = searchParams?.tag || null;
-  const search = searchParams?.search || null;
+export default function BlogClient() {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
 
-  let posts: BlogPost[] = [];
-  let tags: string[] = [];
-  let totalPages = 1;
-  let currentPage = page;
+  useEffect(() => {
+    fetchPosts();
+    fetchTags();
+  }, [currentPage, selectedTag]);
 
+  const fetchPosts = async () => {
   try {
-    const data = await fetchBlogData(page, tag, search);
-    posts = data.posts;
-    tags = data.tags;
-    totalPages = data.totalPages;
-    currentPage = data.currentPage;
-  } catch (e) {
-    notFound();
+    setLoading(true);
+    const params = new URLSearchParams({
+      page: currentPage.toString(),
+      per_page: "6"
+    });
+    
+    if (selectedTag) {
+      params.append("tag", selectedTag);
+    }
+
+    console.log('🔍 Fetching posts from:', `/api/v1/blog/posts?${params}`);
+
+    const response = await fetch(`/api/v1/blog/posts?${params}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: Failed to fetch blog posts`);
+    }
+    
+    const data: BlogResponse = await response.json();
+    
+    console.log('📦 Raw API response:', data);
+    console.log('📋 Posts array:', data.posts);
+    console.log('📊 Total posts:', data.total);
+    
+    // 🔥 ПЕРЕВІРЯЄМО ЧИ Є ПОСТИ
+    if (!data.posts || !Array.isArray(data.posts)) {
+      console.error('❌ Posts is not an array:', data.posts);
+      setPosts([]);
+      setTotalPages(0);
+      return;
+    }
+    
+    // 🔥 ФІЛЬТРУЄМО ТІЛЬКИ PUBLISHED ПОСТИ (додаткова перевірка)
+    const publishedPosts = data.posts.filter(post => {
+      console.log(`📝 Post "${post.title}" has status: "${post.status}"`);
+      return post.status === 'published';
+    });
+    
+    console.log('✅ Published posts after filter:', publishedPosts);
+    console.log('📊 Published posts count:', publishedPosts.length);
+    
+    setPosts(publishedPosts);
+    setTotalPages(data.total_pages || 1);
+    
+    if (publishedPosts.length === 0) {
+      console.warn('⚠️ No published posts found! Check if posts have status="published"');
+    }
+    
+  } catch (err) {
+    console.error('❌ Error fetching posts:', err);
+    setError(err instanceof Error ? err.message : "An error occurred");
+  } finally {
+    setLoading(false);
+  }
+};
+
+  const fetchTags = async () => {
+    try {
+      const response = await fetch("/api/v1/blog/tags");
+      if (response.ok) {
+        const tags = await response.json();
+        setAvailableTags(tags);
+      }
+    } catch (err) {
+      console.error("Failed to fetch tags:", err);
+    }
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Search functionality can be implemented here
+    // For now, we'll just filter on the frontend
+  };
+
+  const handleTagSelect = (tag: string) => {
+    setSelectedTag(selectedTag === tag ? null : tag);
+    setCurrentPage(1);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+  };
+
+  const clearFilters = () => {
+    setSelectedTag(null);
+    setSearchTerm("");
+    setCurrentPage(1);
+  };
+
+  const filteredPosts = posts.filter(post => {
+    const matchesSearch = searchTerm === "" || 
+      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
+  });
+
+  if (loading && posts.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <p className="mt-4 text-gray-600 dark:text-gray-400">Loading blog posts...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-red-600 mb-4">
+          <Search className="h-12 w-12 mx-auto mb-4" />
+          <p className="text-lg font-semibold">Error Loading Posts</p>
+          <p className="text-sm">{error}</p>
+        </div>
+        <Button onClick={fetchPosts} className="mt-4">
+          Try Again
+        </Button>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-8">
-      {/* Search + Filter */}
-      <form className="flex flex-col md:flex-row gap-4" method="get">
-        <Input
-          name="search"
-          placeholder="Search blog posts..."
-          defaultValue={search || ""}
-          className="md:flex-1"
-        />
-        <Button type="submit">Search</Button>
-        {(search || tag) && (
-          <Link href="/blog" className="btn btn-outline">
-            Clear Filters
-          </Link>
-        )}
-      </form>
-
-      {tags.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {tags.map((t) => (
-            <Link
-              key={t}
-              href={`/blog?tag=${t}`}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${t === tag ? "bg-blue-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"}`}
-            >
-              {t}
-            </Link>
-          ))}
+{/* 🔥 SIMPLE DEBUG PANEL */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <h3 className="text-lg font-semibold text-blue-800 mb-2">🔍 Debug Information</h3>
+        <div className="text-sm text-blue-700 space-y-2">
+          <p><strong>API Posts:</strong> {posts.length}</p>
+          <p><strong>Loading:</strong> {loading ? 'yes' : 'no'}</p>
+          <p><strong>Error:</strong> {error || 'none'}</p>
+          <p><strong>Published Posts:</strong> {posts.filter(p => p.status === 'published').length}</p>
+          <p><strong>Filtered Posts Shown:</strong> {filteredPosts.length}</p>
+          
+          {posts.length > 0 && (
+            <div>
+              <strong>All Posts & Statuses:</strong>
+              <ul className="ml-4 mt-1 max-h-32 overflow-y-auto">
+                {posts.map((post, idx) => (
+                  <li key={idx} className="font-mono text-xs">
+                    "{post.title.substring(0, 30)}..." → 
+                    <span className={post.status === 'published' ? 'text-green-600' : 'text-yellow-600'}>
+                      ({post.status})
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
-      )}
+      </div>
+            {/* Search and Filters */}
+      <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg">
+        <div className="flex flex-col md:flex-row gap-4 mb-4">
+          <form onSubmit={handleSearch} className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Search blog posts..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </form>
+          {(selectedTag || searchTerm) && (
+            <Button
+              variant="outline"
+              onClick={clearFilters}
+              className="whitespace-nowrap"
+            >
+              Clear Filters
+            </Button>
+          )}
+        </div>
 
-      {/* Posts */}
-      {posts.length === 0 ? (
+        {/* Tag Filter */}
+        {availableTags.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2">
+              Filter by tag:
+            </span>
+            {availableTags.map((tag) => (
+              <TagButton
+                key={tag}
+                tag={tag}
+                isSelected={selectedTag === tag}
+                onSelect={handleTagSelect}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Blog Posts Grid */}
+      {filteredPosts.length === 0 ? (
         <div className="text-center py-12">
           <Search className="h-12 w-12 mx-auto mb-4 text-gray-400" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             No posts found
           </h3>
           <p className="text-gray-600 dark:text-gray-400">
-            Try changing your filters or search.
+            {searchTerm || selectedTag
+              ? "Try adjusting your search or filters."
+              : "No blog posts have been published yet."}
           </p>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 gap-6">
-          {posts.map((post) => (
+          {filteredPosts.map((post) => (
             <Card key={post.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="text-xl font-semibold mb-2 line-clamp-2">
-                  {post.title}
-                </CardTitle>
-                <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                  <div className="flex items-center gap-1">
-                    <User className="h-4 w-4" />
-                    {post.author}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    {formatDate(post.published_at || post.created_at)}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-xl font-semibold mb-2 line-clamp-2">
+                      {post.title}
+                    </CardTitle>
+                    <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex items-center gap-1">
+                        <User className="h-4 w-4" />
+                        {post.author}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        {formatDate(post.published_at || post.created_at)}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardHeader>
@@ -161,17 +328,28 @@ export default async function BlogPage({
                 <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
                   {post.excerpt}
                 </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {post.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="text-xs">
-                      <Tag className="h-3 w-3 mr-1" />
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                <Button asChild variant="outline" className="w-full">
+                
+                {/* Tags */}
+                {post.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {post.tags.map((tag) => (
+                      <PostTagBadge
+                        key={tag}
+                        tag={tag}
+                        onSelect={handleTagSelect}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full"
+                >
                   <Link href={`/blog/${post.slug}`}>
-                    Read More <ChevronRight className="h-4 w-4 ml-2" />
+                    Read More
+                    <ChevronRight className="h-4 w-4 ml-2" />
                   </Link>
                 </Button>
               </CardContent>
@@ -186,41 +364,71 @@ export default async function BlogPage({
           <Button
             variant="outline"
             size="sm"
-            asChild
+            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
             disabled={currentPage === 1}
           >
-            <Link href={`/blog?page=${currentPage - 1}${tag ? `&tag=${tag}` : ""}${search ? `&search=${search}` : ""}`}>
-              <ChevronLeft className="h-4 w-4" /> Previous
-            </Link>
+            <ChevronLeft className="h-4 w-4" />
+            Previous
           </Button>
-
+          
           <div className="flex space-x-1">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <Button
-                key={pageNum}
-                variant={currentPage === pageNum ? "default" : "outline"}
+                key={page}
+                variant={currentPage === page ? "default" : "outline"}
                 size="sm"
-                asChild
+                onClick={() => setCurrentPage(page)}
+                className="w-10"
               >
-                <Link href={`/blog?page=${pageNum}${tag ? `&tag=${tag}` : ""}${search ? `&search=${search}` : ""}`}>
-                  {pageNum}
-                </Link>
+                {page}
               </Button>
             ))}
           </div>
-
+          
           <Button
             variant="outline"
             size="sm"
-            asChild
+            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
             disabled={currentPage === totalPages}
           >
-            <Link href={`/blog?page=${currentPage + 1}${tag ? `&tag=${tag}` : ""}${search ? `&search=${search}` : ""}`}>
-              Next <ChevronRight className="h-4 w-4" />
-            </Link>
+            Next
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       )}
+
+      {/* Call to Action */}
+      <div className="mt-12 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg">
+        <h3 className="text-xl font-semibold mb-4 text-center">
+          Try Our Network Tools
+        </h3>
+        <p className="text-center mb-6 text-gray-600 dark:text-gray-400">
+          Test your network security and learn more about your internet connection:
+        </p>
+        <div className="flex flex-wrap justify-center gap-4">
+          <Link 
+            href="/ip-location"
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all shadow-xs h-9 px-4 py-2 bg-green-600 hover:bg-green-700 text-white"
+          >
+            <Globe className="h-4 w-4" />
+            Check IP Location
+          </Link>
+          <Link 
+            href="/port-checker"
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all shadow-xs h-9 px-4 py-2 bg-red-600 hover:bg-red-700 text-white"
+          >
+            <Shield className="h-4 w-4" />
+            Scan Ports
+          </Link>
+          <Link 
+            href="/dns-lookup"
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all shadow-xs h-9 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white"
+          >
+            <Search className="h-4 w-4" />
+            DNS Lookup
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
