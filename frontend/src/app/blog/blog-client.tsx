@@ -1,9 +1,9 @@
 /*
-  ✅ Optimized for Server-Side Rendering (SSR)
-  ✅ Uses Next.js 13+ App Router structure
-  ✅ Fetches blog posts and tags on the server
-  ✅ Preserves existing UI/UX
-  ✅ Dramatically improves initial load performance
+  ✅ Full SSR Blog Page with Pagination, Tag Filtering, and Search
+  ✅ Built for Next.js App Router (`app/blog/page.tsx`)
+  ✅ Uses `searchParams` for pagination, search, and tag filters
+  ✅ No `use client`, fully SSR
+  ✅ Compatible with /api/v1/blog/posts and /api/v1/blog/tags
 */
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,9 +36,24 @@ interface BlogResponse {
   total_pages: number;
 }
 
-async function fetchBlogData(): Promise<{ posts: BlogPost[]; tags: string[] }> {
+function formatDate(dateString: string) {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+async function fetchBlogData(page: number, tag: string | null, search: string | null): Promise<{ posts: BlogPost[]; tags: string[]; totalPages: number; currentPage: number }> {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    per_page: "6",
+  });
+  if (tag) params.append("tag", tag);
+  if (search) params.append("search", search);
+
   const [postsRes, tagsRes] = await Promise.all([
-    fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v1/blog/posts?page=1&per_page=6`, { next: { revalidate: 60 } }),
+    fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v1/blog/posts?${params.toString()}`, { next: { revalidate: 60 } }),
     fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v1/blog/tags`, { next: { revalidate: 60 } }),
   ]);
 
@@ -51,51 +66,90 @@ async function fetchBlogData(): Promise<{ posts: BlogPost[]; tags: string[] }> {
   return {
     posts: publishedPosts,
     tags,
+    totalPages: postData.total_pages,
+    currentPage: postData.page,
   };
 }
 
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
+export default async function BlogPage({ searchParams }: { searchParams: { page?: string; tag?: string; search?: string } }) {
+  const page = parseInt(searchParams.page || "1");
+  const tag = searchParams.tag || null;
+  const search = searchParams.search || null;
 
-export default async function BlogPage() {
   let posts: BlogPost[] = [];
   let tags: string[] = [];
+  let totalPages = 1;
+  let currentPage = page;
+
   try {
-    const data = await fetchBlogData();
+    const data = await fetchBlogData(page, tag, search);
     posts = data.posts;
     tags = data.tags;
+    totalPages = data.totalPages;
+    currentPage = data.currentPage;
   } catch (e) {
     notFound();
   }
 
   return (
     <div className="space-y-8">
-      <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg">
-        <h1 className="text-2xl font-bold mb-4">Latest Blog Posts</h1>
+      {/* Search + Filter */}
+      <form className="flex flex-col md:flex-row gap-4" method="get">
+        <Input
+          name="search"
+          placeholder="Search blog posts..."
+          defaultValue={search || ""}
+          className="md:flex-1"
+        />
+        <Button type="submit">Search</Button>
+        {(search || tag) && (
+          <Link href="/blog" className="btn btn-outline">
+            Clear Filters
+          </Link>
+        )}
+      </form>
+
+      {tags.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {tags.map((t) => (
+            <Link
+              key={t}
+              href={`/blog?tag=${t}`}
+              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${t === tag ? "bg-blue-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"}`}
+            >
+              {t}
+            </Link>
+          ))}
+        </div>
+      )}
+
+      {/* Posts */}
+      {posts.length === 0 ? (
+        <div className="text-center py-12">
+          <Search className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            No posts found
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            Try changing your filters or search.
+          </p>
+        </div>
+      ) : (
         <div className="grid md:grid-cols-2 gap-6">
           {posts.map((post) => (
             <Card key={post.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-xl font-semibold mb-2 line-clamp-2">
-                      {post.title}
-                    </CardTitle>
-                    <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                      <div className="flex items-center gap-1">
-                        <User className="h-4 w-4" />
-                        {post.author}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        {formatDate(post.published_at || post.created_at)}
-                      </div>
-                    </div>
+                <CardTitle className="text-xl font-semibold mb-2 line-clamp-2">
+                  {post.title}
+                </CardTitle>
+                <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center gap-1">
+                    <User className="h-4 w-4" />
+                    {post.author}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-4 w-4" />
+                    {formatDate(post.published_at || post.created_at)}
                   </div>
                 </div>
               </CardHeader>
@@ -103,67 +157,66 @@ export default async function BlogPage() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
                   {post.excerpt}
                 </p>
-
-                {post.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {post.tags.map((tag) => (
-                      <Badge
-                        key={tag}
-                        variant="secondary"
-                        className="text-xs cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900"
-                      >
-                        <Tag className="h-3 w-3 mr-1" />
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {post.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="text-xs">
+                      <Tag className="h-3 w-3 mr-1" />
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
                 <Button asChild variant="outline" className="w-full">
                   <Link href={`/blog/${post.slug}`}>
-                    Read More
-                    <ChevronRight className="h-4 w-4 ml-2" />
+                    Read More <ChevronRight className="h-4 w-4 ml-2" />
                   </Link>
                 </Button>
               </CardContent>
             </Card>
           ))}
         </div>
-      </div>
+      )}
 
-      {/* Call to Action */}
-      <div className="mt-12 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg">
-        <h3 className="text-xl font-semibold mb-4 text-center">
-          Try Our Network Tools
-        </h3>
-        <p className="text-center mb-6 text-gray-600 dark:text-gray-400">
-          Test your network security and learn more about your internet connection:
-        </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <Link
-            href="/ip-location"
-            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all shadow-xs h-9 px-4 py-2 bg-green-600 hover:bg-green-700 text-white"
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center space-x-2 py-8">
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            disabled={currentPage === 1}
           >
-            <Globe className="h-4 w-4" />
-            Check IP Location
-          </Link>
-          <Link
-            href="/port-checker"
-            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all shadow-xs h-9 px-4 py-2 bg-red-600 hover:bg-red-700 text-white"
+            <Link href={`/blog?page=${currentPage - 1}${tag ? `&tag=${tag}` : ""}${search ? `&search=${search}` : ""}`}>
+              <ChevronLeft className="h-4 w-4" /> Previous
+            </Link>
+          </Button>
+
+          <div className="flex space-x-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+              <Button
+                key={pageNum}
+                variant={currentPage === pageNum ? "default" : "outline"}
+                size="sm"
+                asChild
+              >
+                <Link href={`/blog?page=${pageNum}${tag ? `&tag=${tag}` : ""}${search ? `&search=${search}` : ""}`}>
+                  {pageNum}
+                </Link>
+              </Button>
+            ))}
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            disabled={currentPage === totalPages}
           >
-            <Shield className="h-4 w-4" />
-            Scan Ports
-          </Link>
-          <Link
-            href="/dns-lookup"
-            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all shadow-xs h-9 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white"
-          >
-            <Search className="h-4 w-4" />
-            DNS Lookup
-          </Link>
+            <Link href={`/blog?page=${currentPage + 1}${tag ? `&tag=${tag}` : ""}${search ? `&search=${search}` : ""}`}>
+              Next <ChevronRight className="h-4 w-4" />
+            </Link>
+          </Button>
         </div>
-      </div>
+      )}
     </div>
   );
 }
-
