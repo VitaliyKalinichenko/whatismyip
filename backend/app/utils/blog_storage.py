@@ -205,36 +205,43 @@ class BlogStorage:
             end = start + per_page
             paginated_result = result[start:end]
             
-       # Convert to BlogPost objects
+            # Convert to BlogPost objects
             blog_posts = []
             for post_data in paginated_result:
                 try:
-        # Додаємо відсутні поля з значеннями за замовчуванням
-                   post_data_clean = {
-                       'id': post_data.get('id', ''),
-                       'title': post_data.get('title', ''),
-                       'slug': post_data.get('slug', ''),
-                       'excerpt': post_data.get('excerpt', ''),
-                       'content': post_data.get('content', ''),
-                       'author': post_data.get('author', ''),
-                       'status': post_data.get('status', 'draft'),
-                       'tags': post_data.get('tags', []),
-                       'created_at': post_data.get('created_at', ''),
-                       'updated_at': post_data.get('updated_at', ''),
-                       'published_at': post_data.get('published_at'),
-                       'featured_image': post_data.get('featured_image'),
-                       'seo_title': post_data.get('seo_title'),
-                       'seo_description': post_data.get('seo_description'),
-                  }
-        
-                  blog_posts.append(BlogPost(**post_data_clean))
-                  logger.info(f"Successfully parsed post: {post_data.get('title', 'unknown')}")
-        
-              except Exception as e:
-                  logger.error(f"Failed to parse post {post_data.get('id', 'unknown')}: {e}")
-                  logger.error(f"Post data: {post_data}")  # Показуємо що саме не парситься
-                  continue
-    
+                    # Додаємо відсутні поля з значеннями за замовчуванням
+                    post_data_clean = {
+                        'id': post_data.get('id', ''),
+                        'title': post_data.get('title', ''),
+                        'slug': post_data.get('slug', ''),
+                        'excerpt': post_data.get('excerpt', ''),
+                        'content': post_data.get('content', ''),
+                        'author': post_data.get('author', ''),
+                        'status': post_data.get('status', 'draft'),
+                        'tags': post_data.get('tags', []),
+                        'created_at': post_data.get('created_at', ''),
+                        'updated_at': post_data.get('updated_at', ''),
+                        'published_at': post_data.get('published_at'),
+                        'featured_image': post_data.get('featured_image'),
+                        'seo_title': post_data.get('seo_title'),
+                        'seo_description': post_data.get('seo_description'),
+                    }
+                    
+                    blog_posts.append(BlogPost(**post_data_clean))
+                    logger.info(f"Successfully parsed post: {post_data.get('title', 'unknown')}")
+                    
+                except Exception as e:
+                    logger.error(f"Failed to parse post {post_data.get('id', 'unknown')}: {e}")
+                    logger.error(f"Post data: {post_data}")
+                    continue
+            
+            logger.info(f"Retrieved {len(blog_posts)} posts (total: {total})")
+            return blog_posts, total
+            
+        except Exception as e:
+            logger.error(f"Failed to get posts: {e}")
+            return [], 0
+
     def get_published_posts(self, page: int = 1, per_page: int = 10) -> tuple[List[BlogPost], int]:
         """Get paginated list of published blog posts."""
         return self.get_posts(status=BlogPostStatus.PUBLISHED, page=page, per_page=per_page)
